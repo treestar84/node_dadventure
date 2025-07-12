@@ -70,10 +70,79 @@ export interface Achievement {
   id: string
   character_id: string
   key: string
-  detail: string
+  title: string
+  description: string
+  category: AchievementCategory
+  tier: AchievementTier
+  points: number
   achieved_at: string
-  reward: Record<string, any>
+  reward: AchievementReward
+  requirements?: AchievementRequirement
+  icon?: string
+  hidden?: boolean
 }
+
+export interface AchievementReward {
+  coins?: number
+  exp?: number
+  items?: string[]
+  title?: string
+  skin?: string
+}
+
+export interface AchievementRequirement {
+  type: 'stat' | 'level' | 'count' | 'time' | 'special'
+  target: string | number
+  current?: number
+  metadata?: Record<string, any>
+}
+
+export interface AchievementDefinition {
+  key: string
+  title: string
+  description: string
+  category: AchievementCategory
+  tier: AchievementTier
+  points: number
+  requirements: AchievementRequirement
+  reward: AchievementReward
+  icon?: string
+  hidden?: boolean
+  checkFunction?: (character: Character, context: AchievementContext) => boolean
+}
+
+export interface AchievementContext {
+  previousLevel?: number
+  actionType?: string
+  targetCharacter?: Character
+  bugsUsed?: number
+  timeSpent?: number
+  metadata?: Record<string, any>
+}
+
+export const ACHIEVEMENT_CATEGORIES = [
+  'first_steps',    // 첫 걸음
+  'progression',    // 성장
+  'social',         // 사교
+  'collector',      // 수집가
+  'explorer',       // 탐험가
+  'master',         // 마스터
+  'time_keeper',    // 시간지기
+  'generous',       // 관대함
+  'scholar',        // 학자
+  'survivor',       // 생존자
+  'perfectionist',  // 완벽주의자
+  'lucky',          // 행운
+  'specialist',     // 전문가
+  'legendary'       // 전설
+] as const
+
+export const ACHIEVEMENT_TIERS = [
+  'bronze', 'silver', 'gold', 'platinum', 'diamond'
+] as const
+
+export type AchievementCategory = typeof ACHIEVEMENT_CATEGORIES[number]
+export type AchievementTier = typeof ACHIEVEMENT_TIERS[number]
 
 export interface Visit {
   id: string

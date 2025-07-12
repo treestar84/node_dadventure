@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import bcrypt from 'bcryptjs'
 import { supabase } from '@/lib/supabase'
 import type { Character, CharacterStats, Species, Job } from '@/types'
+import { useAchievementStore } from './achievement'
 
 export const useCharacterStore = defineStore('character', () => {
   const currentCharacter = ref<Character | null>(null)
@@ -87,6 +88,17 @@ export const useCharacterStore = defineStore('character', () => {
       
       // Create initial bug for the character
       await supabase.from('bugs').insert([{ character_id: data.id }])
+      
+      // Create initial character activity
+      await supabase.rpc('update_character_activity', {
+        character_id: data.id,
+        online_status: 'online',
+        public_message: null
+      })
+      
+      // Trigger first character achievement
+      const achievementStore = useAchievementStore()
+      await achievementStore.checkActionAchievements(data, 'character_created')
       
       return { success: true }
     } catch (error) {
@@ -202,6 +214,11 @@ export const useCharacterStore = defineStore('character', () => {
       if (error) return false
       
       currentCharacter.value.stats = updatedStats
+      
+      // Check for stat-based achievements
+      const achievementStore = useAchievementStore()
+      await achievementStore.checkActionAchievements(currentCharacter.value, 'stat_update')
+      
       return true
     } catch (error) {
       return false
@@ -230,17 +247,25 @@ export const useCharacterStore = defineStore('character', () => {
     if (!currentCharacter.value) return false
     
     try {
+      const previousLevel = currentCharacter.value.level
       const newExp = currentCharacter.value.exp + amount
+      const newLevel = Math.floor(Math.sqrt(newExp / 100)) + 1
       
       const { error } = await supabase
         .from('characters')
-        .update({ exp: newExp })
+        .update({ exp: newExp, level: newLevel })
         .eq('id', currentCharacter.value.id)
       
       if (error) return false
       
       currentCharacter.value.exp = newExp
-      // Level will be updated automatically by database trigger
+      currentCharacter.value.level = newLevel
+      
+      // Check for level-up achievements
+      if (newLevel > previousLevel) {
+        const achievementStore = useAchievementStore()
+        await achievementStore.checkLevelUpAchievements(currentCharacter.value, previousLevel)
+      }
       
       return true
     } catch (error) {

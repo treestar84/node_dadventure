@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import type { Bug } from '@/types'
+import { useAchievementStore } from './achievement'
+import { useCharacterStore } from './character'
 
 export const useBugStore = defineStore('bug', () => {
   const availableBugs = ref<Bug[]>([])
@@ -99,6 +101,25 @@ export const useBugStore = defineStore('bug', () => {
 
       // Remove from available bugs
       availableBugs.value = availableBugs.value.filter(bug => bug.id !== bugId)
+      
+      // Update character statistics
+      await supabase.rpc('increment_bug_usage', { character_id: characterId })
+      
+      // Give experience to character (10-50 exp)
+      const expGain = Math.floor(Math.random() * 41) + 10
+      const characterStore = useCharacterStore()
+      await characterStore.gainExperience(expGain)
+      
+      // Get updated statistics and check achievements
+      const { data: stats } = await supabase.rpc('get_character_statistics', { character_id: characterId })
+      
+      if (stats && characterStore.currentCharacter) {
+        const achievementStore = useAchievementStore()
+        await achievementStore.checkActionAchievements(characterStore.currentCharacter, 'bug_fed', {
+          totalBugsUsed: stats.total_bugs_used,
+          isFirstFeed: stats.total_bugs_used === 1
+        })
+      }
       
       console.log('Bug fed successfully!')
       return true

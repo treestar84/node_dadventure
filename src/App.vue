@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useCharacterStore } from '@/stores/character'
+import { useNotificationStore } from '@/stores/notification'
 import CharacterLogin from '@/components/CharacterLogin.vue'
 import CharacterCreation from '@/components/CharacterCreation.vue'
 import GameMain from '@/components/GameMain.vue'
+import AchievementNotification from '@/components/AchievementNotification.vue'
 
 const characterStore = useCharacterStore()
+const notificationStore = useNotificationStore()
 const showCreateForm = ref(false)
 
 onMounted(() => {
@@ -57,6 +60,13 @@ function onCharacterCreated() {
 
     <!-- Main Game -->
     <GameMain v-else />
+    
+    <!-- Achievement Notifications -->
+    <AchievementNotification 
+      :achievement="notificationStore.currentAchievement"
+      :visible="notificationStore.showAchievementNotification"
+      @close="notificationStore.closeAchievementNotification"
+    />
   </div>
 </template>
 
