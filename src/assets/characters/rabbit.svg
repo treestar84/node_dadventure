@@ -1,0 +1,41 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Rabbit Body -->
+  <ellipse cx="100" cy="145" rx="45" ry="35" fill="#F5F5DC" stroke="#DDD" stroke-width="2"/>
+  
+  <!-- Rabbit Head -->
+  <circle cx="100" cy="85" r="40" fill="#F5F5DC" stroke="#DDD" stroke-width="2"/>
+  
+  <!-- Rabbit Ears -->
+  <ellipse cx="85" cy="45" rx="12" ry="35" fill="#F5F5DC" stroke="#DDD" stroke-width="2"/>
+  <ellipse cx="115" cy="45" rx="12" ry="35" fill="#F5F5DC" stroke="#DDD" stroke-width="2"/>
+  <ellipse cx="85" cy="45" rx="6" ry="25" fill="#FFB6C1"/>
+  <ellipse cx="115" cy="45" rx="6" ry="25" fill="#FFB6C1"/>
+  
+  <!-- Rabbit Eyes -->
+  <circle cx="88" cy="78" r="6" fill="#000"/>
+  <circle cx="112" cy="78" r="6" fill="#000"/>
+  <circle cx="88" cy="76" r="2" fill="#FFF"/>
+  <circle cx="112" cy="76" r="2" fill="#FFF"/>
+  
+  <!-- Rabbit Nose -->
+  <ellipse cx="100" cy="88" rx="3" ry="2" fill="#FF69B4"/>
+  
+  <!-- Rabbit Mouth -->
+  <path d="M100 92 L95 97 M100 92 L105 97" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M95 100 Q100 105 105 100" stroke="#000" stroke-width="1.5" fill="none"/>
+  
+  <!-- Rabbit Cheeks -->
+  <circle cx="70" cy="85" r="8" fill="#FFB6C1" opacity="0.6"/>
+  <circle cx="130" cy="85" r="8" fill="#FFB6C1" opacity="0.6"/>
+  
+  <!-- Rabbit Tail -->
+  <circle cx="145" cy="145" r="12" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+  
+  <!-- Rabbit Paws -->
+  <ellipse cx="75" cy="170" rx="12" ry="8" fill="#F5F5DC" stroke="#DDD" stroke-width="1"/>
+  <ellipse cx="125" cy="170" rx="12" ry="8" fill="#F5F5DC" stroke="#DDD" stroke-width="1"/>
+  
+  <!-- Rabbit Front Paws -->
+  <ellipse cx="85" cy="130" rx="8" ry="12" fill="#F5F5DC" stroke="#DDD" stroke-width="1"/>
+  <ellipse cx="115" cy="130" rx="8" ry="12" fill="#F5F5DC" stroke="#DDD" stroke-width="1"/>
+</svg>

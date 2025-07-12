@@ -1,0 +1,39 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Cat Body -->
+  <ellipse cx="100" cy="140" rx="50" ry="40" fill="#FFA500" stroke="#FF8C00" stroke-width="2"/>
+  
+  <!-- Cat Head -->
+  <circle cx="100" cy="80" r="45" fill="#FFA500" stroke="#FF8C00" stroke-width="2"/>
+  
+  <!-- Cat Ears -->
+  <path d="M70 50 L60 25 L85 40 Z" fill="#FFA500" stroke="#FF8C00" stroke-width="2"/>
+  <path d="M130 50 L140 25 L115 40 Z" fill="#FFA500" stroke="#FF8C00" stroke-width="2"/>
+  <path d="M70 45 L65 32 L80 42 Z" fill="#FFB347"/>
+  <path d="M130 45 L135 32 L120 42 Z" fill="#FFB347"/>
+  
+  <!-- Cat Eyes -->
+  <ellipse cx="85" cy="75" rx="8" ry="12" fill="#000"/>
+  <ellipse cx="115" cy="75" rx="8" ry="12" fill="#000"/>
+  <ellipse cx="85" cy="72" rx="3" ry="4" fill="#FFF"/>
+  <ellipse cx="115" cy="72" rx="3" ry="4" fill="#FFF"/>
+  
+  <!-- Cat Nose -->
+  <path d="M100 85 L95 92 L105 92 Z" fill="#FF69B4"/>
+  
+  <!-- Cat Mouth -->
+  <path d="M100 95 Q90 105 85 100" stroke="#000" stroke-width="2" fill="none"/>
+  <path d="M100 95 Q110 105 115 100" stroke="#000" stroke-width="2" fill="none"/>
+  
+  <!-- Cat Whiskers -->
+  <line x1="60" y1="80" x2="45" y2="75" stroke="#000" stroke-width="1.5"/>
+  <line x1="60" y1="90" x2="45" y2="90" stroke="#000" stroke-width="1.5"/>
+  <line x1="140" y1="80" x2="155" y2="75" stroke="#000" stroke-width="1.5"/>
+  <line x1="140" y1="90" x2="155" y2="90" stroke="#000" stroke-width="1.5"/>
+  
+  <!-- Cat Tail -->
+  <path d="M150 140 Q170 120 160 90 Q155 80 165 75" stroke="#FFA500" stroke-width="12" fill="none" stroke-linecap="round"/>
+  
+  <!-- Cat Paws -->
+  <ellipse cx="75" cy="170" rx="12" ry="8" fill="#FF8C00"/>
+  <ellipse cx="125" cy="170" rx="12" ry="8" fill="#FF8C00"/>
+</svg>

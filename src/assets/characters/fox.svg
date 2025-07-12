@@ -1,0 +1,43 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fox Body -->
+  <ellipse cx="100" cy="140" rx="45" ry="35" fill="#FF8C00" stroke="#FF6347" stroke-width="2"/>
+  
+  <!-- Fox Head -->
+  <ellipse cx="100" cy="80" rx="40" ry="35" fill="#FF8C00" stroke="#FF6347" stroke-width="2"/>
+  
+  <!-- Fox Snout -->
+  <ellipse cx="100" cy="95" rx="15" ry="12" fill="#FFEFD5" stroke="#FF6347" stroke-width="1"/>
+  
+  <!-- Fox Ears -->
+  <path d="M75 55 L65 25 L90 45 Z" fill="#FF8C00" stroke="#FF6347" stroke-width="2"/>
+  <path d="M125 55 L135 25 L110 45 Z" fill="#FF8C00" stroke="#FF6347" stroke-width="2"/>
+  <path d="M75 50 L70 35 L85 47 Z" fill="#000"/>
+  <path d="M125 50 L130 35 L115 47 Z" fill="#000"/>
+  
+  <!-- Fox Eyes -->
+  <ellipse cx="88" cy="75" rx="6" ry="8" fill="#000"/>
+  <ellipse cx="112" cy="75" rx="6" ry="8" fill="#000"/>
+  <ellipse cx="88" cy="73" rx="2" ry="3" fill="#FFF"/>
+  <ellipse cx="112" cy="73" rx="2" ry="3" fill="#FFF"/>
+  
+  <!-- Fox Nose -->
+  <circle cx="100" cy="88" r="3" fill="#000"/>
+  
+  <!-- Fox Mouth -->
+  <path d="M100 92 Q95 98 90 95" stroke="#000" stroke-width="1.5" fill="none"/>
+  <path d="M100 92 Q105 98 110 95" stroke="#000" stroke-width="1.5" fill="none"/>
+  
+  <!-- Fox Chest -->
+  <ellipse cx="100" cy="125" rx="25" ry="20" fill="#FFEFD5"/>
+  
+  <!-- Fox Tail -->
+  <path d="M145 140 Q170 120 165 90 Q160 70 170 60" stroke="#FF8C00" stroke-width="18" fill="none" stroke-linecap="round"/>
+  <path d="M145 140 Q170 120 165 90 Q160 70 170 60" stroke="#FFEFD5" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Fox Paws -->
+  <ellipse cx="75" cy="168" rx="12" ry="8" fill="#000"/>
+  <ellipse cx="125" cy="168" rx="12" ry="8" fill="#000"/>
+  
+  <!-- Fox Markings -->
+  <path d="M85 70 Q100 65 115 70" stroke="#FFEFD5" stroke-width="4" fill="none"/>
+</svg>

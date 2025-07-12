@@ -1,0 +1,41 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dog Body -->
+  <ellipse cx="100" cy="140" rx="55" ry="45" fill="#D2691E" stroke="#A0522D" stroke-width="2"/>
+  
+  <!-- Dog Head -->
+  <ellipse cx="100" cy="80" rx="45" ry="40" fill="#D2691E" stroke="#A0522D" stroke-width="2"/>
+  
+  <!-- Dog Snout -->
+  <ellipse cx="100" cy="95" rx="20" ry="15" fill="#DEB887" stroke="#A0522D" stroke-width="1.5"/>
+  
+  <!-- Dog Ears -->
+  <ellipse cx="75" cy="65" rx="15" ry="25" fill="#A0522D" transform="rotate(-30 75 65)"/>
+  <ellipse cx="125" cy="65" rx="15" ry="25" fill="#A0522D" transform="rotate(30 125 65)"/>
+  
+  <!-- Dog Eyes -->
+  <circle cx="85" cy="70" r="6" fill="#000"/>
+  <circle cx="115" cy="70" r="6" fill="#000"/>
+  <circle cx="85" cy="68" r="2" fill="#FFF"/>
+  <circle cx="115" cy="68" r="2" fill="#FFF"/>
+  
+  <!-- Dog Nose -->
+  <circle cx="100" cy="88" r="4" fill="#000"/>
+  
+  <!-- Dog Mouth -->
+  <path d="M100 95 Q90 105 85 100" stroke="#000" stroke-width="2" fill="none"/>
+  <path d="M100 95 Q110 105 115 100" stroke="#000" stroke-width="2" fill="none"/>
+  
+  <!-- Dog Tongue -->
+  <ellipse cx="100" cy="105" rx="8" ry="4" fill="#FF69B4"/>
+  
+  <!-- Dog Tail (wagging) -->
+  <path d="M155 140 Q175 120 170 100 Q165 85 175 80" stroke="#D2691E" stroke-width="15" fill="none" stroke-linecap="round"/>
+  
+  <!-- Dog Paws -->
+  <ellipse cx="70" cy="175" rx="15" ry="10" fill="#A0522D"/>
+  <ellipse cx="130" cy="175" rx="15" ry="10" fill="#A0522D"/>
+  
+  <!-- Dog Collar -->
+  <rect x="75" y="115" width="50" height="8" rx="4" fill="#FF0000"/>
+  <circle cx="100" cy="119" r="3" fill="#FFD700"/>
+</svg>

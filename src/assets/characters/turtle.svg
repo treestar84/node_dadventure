@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Turtle Shell -->
+  <ellipse cx="100" cy="110" rx="55" ry="45" fill="#228B22" stroke="#006400" stroke-width="3"/>
+  
+  <!-- Shell Pattern -->
+  <ellipse cx="100" cy="110" rx="45" ry="35" fill="#32CD32" stroke="#228B22" stroke-width="2"/>
+  <polygon points="100,80 85,95 100,110 115,95" fill="#228B22"/>
+  <polygon points="100,110 85,125 100,140 115,125" fill="#228B22"/>
+  <polygon points="75,110 90,95 90,125" fill="#228B22"/>
+  <polygon points="125,110 110,95 110,125" fill="#228B22"/>
+  
+  <!-- Turtle Head -->
+  <ellipse cx="100" cy="50" rx="20" ry="25" fill="#8FBC8F" stroke="#556B2F" stroke-width="2"/>
+  
+  <!-- Turtle Eyes -->
+  <circle cx="92" cy="45" r="4" fill="#000"/>
+  <circle cx="108" cy="45" r="4" fill="#000"/>
+  <circle cx="92" cy="43" r="1.5" fill="#FFF"/>
+  <circle cx="108" cy="43" r="1.5" fill="#FFF"/>
+  
+  <!-- Turtle Mouth -->
+  <path d="M95 55 Q100 60 105 55" stroke="#000" stroke-width="2" fill="none"/>
+  
+  <!-- Turtle Legs -->
+  <ellipse cx="65" cy="140" rx="12" ry="20" fill="#8FBC8F" stroke="#556B2F" stroke-width="2"/>
+  <ellipse cx="135" cy="140" rx="12" ry="20" fill="#8FBC8F" stroke="#556B2F" stroke-width="2"/>
+  <ellipse cx="75" cy="90" rx="10" ry="15" fill="#8FBC8F" stroke="#556B2F" stroke-width="2"/>
+  <ellipse cx="125" cy="90" rx="10" ry="15" fill="#8FBC8F" stroke="#556B2F" stroke-width="2"/>
+  
+  <!-- Turtle Tail -->
+  <ellipse cx="100" cy="155" rx="8" ry="12" fill="#8FBC8F" stroke="#556B2F" stroke-width="2"/>
+  
+  <!-- Shell Spots -->
+  <circle cx="85" cy="100" r="3" fill="#006400" opacity="0.6"/>
+  <circle cx="115" cy="100" r="3" fill="#006400" opacity="0.6"/>
+  <circle cx="100" cy="120" r="4" fill="#006400" opacity="0.6"/>
+</svg>

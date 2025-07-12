@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bird Body -->
+  <ellipse cx="100" cy="120" rx="40" ry="50" fill="#87CEEB" stroke="#4682B4" stroke-width="2"/>
+  
+  <!-- Bird Head -->
+  <circle cx="100" cy="70" r="35" fill="#87CEEB" stroke="#4682B4" stroke-width="2"/>
+  
+  <!-- Bird Beak -->
+  <path d="M100 80 L80 85 L100 90 Z" fill="#FFA500" stroke="#FF8C00" stroke-width="1"/>
+  
+  <!-- Bird Eyes -->
+  <circle cx="110" cy="65" r="6" fill="#000"/>
+  <circle cx="110" cy="62" r="2" fill="#FFF"/>
+  
+  <!-- Bird Crest -->
+  <path d="M85 45 Q100 30 115 45" stroke="#4682B4" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M90 50 Q100 35 110 50" stroke="#4682B4" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Bird Wing -->
+  <ellipse cx="125" cy="110" rx="25" ry="35" fill="#4682B4" stroke="#2F4F4F" stroke-width="2"/>
+  <ellipse cx="125" cy="110" rx="15" ry="25" fill="#6495ED"/>
+  
+  <!-- Bird Tail -->
+  <ellipse cx="140" cy="140" rx="30" ry="15" fill="#4682B4" stroke="#2F4F4F" stroke-width="2"/>
+  <ellipse cx="145" cy="140" rx="25" ry="10" fill="#6495ED"/>
+  
+  <!-- Bird Legs -->
+  <line x1="90" y1="170" x2="90" y2="185" stroke="#FFA500" stroke-width="3"/>
+  <line x1="110" y1="170" x2="110" y2="185" stroke="#FFA500" stroke-width="3"/>
+  
+  <!-- Bird Feet -->
+  <path d="M90 185 L85 190 M90 185 L90 190 M90 185 L95 190" stroke="#FFA500" stroke-width="2" fill="none"/>
+  <path d="M110 185 L105 190 M110 185 L110 190 M110 185 L115 190" stroke="#FFA500" stroke-width="2" fill="none"/>
+  
+  <!-- Bird Chest -->
+  <ellipse cx="100" cy="130" rx="20" ry="25" fill="#E6F3FF"/>
+</svg>
