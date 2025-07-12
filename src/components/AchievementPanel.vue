@@ -39,13 +39,13 @@
           {{ achievement.icon || '🏆' }}
         </div>
         <div class="achievement-content">
-          <div class="achievement-header">
-            <div class="achievement-info">
-              <h4 class="achievement-title">{{ achievement.title }}</h4>
-              <span class="achievement-description">{{ achievement.description }}</span>
+          <div class="flex justify-between items-start gap-3 mb-2">
+            <div class="flex-1 min-w-0 space-y-1">
+              <h4 class="text-sm font-bold text-white leading-tight">{{ achievement.title }}</h4>
+              <span class="text-xs text-gray-300 leading-relaxed opacity-90 block">{{ achievement.description }}</span>
             </div>
-            <div class="achievement-meta">
-              <div class="achievement-points">{{ achievement.points }}pt</div>
+            <div class="flex-shrink-0">
+              <div class="text-xs font-bold text-yellow-400 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 px-2 py-1 rounded-full border border-yellow-500/30 shadow-sm">{{ achievement.points }}pt</div>
             </div>
           </div>
           
@@ -188,11 +188,16 @@ onMounted(async () => {
 
 <style scoped>
 .achievement-panel {
-  @apply bg-transparent rounded-2xl p-3;
-  max-height: 600px;
+  @apply bg-transparent;
+  padding: 0;
+  height: 100%;
   overflow-y: auto;
   border: none;
   box-shadow: none;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .achievement-summary {
@@ -333,42 +338,52 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  gap: 0.75rem;
 }
 
 .achievement-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .achievement-title {
-  font-weight: 600;
+  font-weight: 700;
   color: #ffffff;
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   margin: 0;
-  margin-bottom: 0.125rem;
+  line-height: 1.2;
+  word-break: break-word;
 }
 
 .achievement-description {
   color: #d1d5db;
-  font-size: 0.625rem;
-  line-height: 1.3;
+  font-size: 0.75rem;
+  line-height: 1.4;
   margin: 0;
+  word-break: break-word;
+  opacity: 0.9;
 }
 
 .achievement-meta {
   flex-shrink: 0;
-  margin-left: 0.5rem;
+  display: flex;
+  align-items: flex-start;
 }
 
 .achievement-points {
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #fb923c;
-  background-color: rgba(194, 65, 12, 0.2);
-  padding: 0.125rem 0.375rem;
+  color: #fbbf24;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+  padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   white-space: nowrap;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .achievement-progress {

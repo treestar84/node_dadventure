@@ -1,41 +1,56 @@
 <template>
   <div class="knowledge-seeds">
-    <!-- Header -->
-    <div class="seeds-header">
-      <h3 class="section-title">🌱 지식의 씨앗</h3>
-      <div class="seeds-stats">
-        <div class="stat-item">
-          <span class="stat-icon">🌱</span>
-          <span class="stat-text">총 {{ seedStats.totalSeeds }}개</span>
+    <!-- Seeds Header -->
+    <div class="p-4 bg-gradient-to-r from-green-900/30 to-blue-900/30 rounded-xl border border-green-500/30 mb-4">
+      <h3 class="text-lg font-bold text-white mb-3">🌱 지식의 씨앗</h3>
+      <div class="flex gap-4">
+        <div class="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg border border-white/20">
+          <span class="text-lg">🌱</span>
+          <span class="text-sm font-medium text-white">총 {{ seedStats.totalSeeds }}개</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-icon">💧</span>
-          <span class="stat-text">댓글 {{ seedStats.totalComments }}개</span>
+        <div class="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg border border-white/20">
+          <span class="text-lg">💬</span>
+          <span class="text-sm font-medium text-white">댓글 {{ seedStats.totalComments }}개</span>
         </div>
-        <div class="stat-item">
-          <span class="stat-icon">📚</span>
-          <span class="stat-text">내 씨앗 {{ seedStats.mySeeds }}개</span>
+        <div class="flex items-center gap-2 px-3 py-2 bg-white/10 rounded-lg border border-white/20">
+          <span class="text-lg">📚</span>
+          <span class="text-sm font-medium text-white">내 {{ seedStats.mySeeds }}개</span>
         </div>
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="seeds-tabs">
+    <!-- Seeds Tabs -->
+    <div class="flex gap-2 mb-4">
       <button 
         @click="activeTab = 'explore'"
-        :class="['tab-button', { active: activeTab === 'explore' }]"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 border relative',
+          activeTab === 'explore' 
+            ? 'bg-green-600 text-white border-green-500 shadow-lg' 
+            : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-600/50'
+        ]"
       >
         🌍 탐색
       </button>
       <button 
         @click="activeTab = 'create'"
-        :class="['tab-button', { active: activeTab === 'create' }]"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 border relative',
+          activeTab === 'create' 
+            ? 'bg-green-600 text-white border-green-500 shadow-lg' 
+            : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-600/50'
+        ]"
       >
         ➕ 씨앗 심기
       </button>
       <button 
         @click="activeTab = 'myseeds'"
-        :class="['tab-button', { active: activeTab === 'myseeds' }]"
+        :class="[
+          'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 border relative',
+          activeTab === 'myseeds' 
+            ? 'bg-green-600 text-white border-green-500 shadow-lg' 
+            : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-600/50'
+        ]"
       >
         📚 내 씨앗
       </button>
@@ -44,55 +59,69 @@
     <!-- Explore Tab -->
     <div v-if="activeTab === 'explore'" class="tab-content">
       <!-- Search Bar -->
-      <div class="search-section">
-        <div class="search-bar">
-          <input
-            v-model="searchQuery"
-            @input="onSearch"
-            placeholder="지식의 씨앗을 검색해보세요..."
-            class="search-input"
-          />
-          <button @click="refreshSeeds" class="refresh-button">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="23,4 23,10 17,10"/>
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-            </svg>
-          </button>
-        </div>
-        
-        <!-- Filter Buttons -->
-        <div class="filter-buttons">
-          <button 
-            @click="setFilter('recent')"
-            :class="['filter-btn', { active: currentFilter === 'recent' }]"
-          >
-            🕒 최신
-          </button>
-          <button 
-            @click="setFilter('popular')"
-            :class="['filter-btn', { active: currentFilter === 'popular' }]"
-          >
-            🔥 인기
-          </button>
-          <button 
-            @click="setFilter('all')"
-            :class="['filter-btn', { active: currentFilter === 'all' }]"
-          >
-            📋 전체
-          </button>
-        </div>
+      <div class="flex gap-3 mb-4">
+        <input
+          v-model="searchQuery"
+          @input="onSearch"
+          placeholder="지식의 씨앗을 검색해보세요..."
+          class="flex-1 px-4 py-3 border border-gray-600/50 rounded-xl text-sm bg-gray-800/50 text-white placeholder-gray-400 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+        />
+        <button @click="refreshSeeds" class="p-3 bg-gray-700/50 hover:bg-gray-600/50 rounded-xl transition-colors text-gray-300 border border-gray-600/50">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23,4 23,10 17,10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Filter Buttons -->
+      <div class="flex gap-2 mb-4">
+        <button 
+          @click="setFilter('recent')"
+          :class="[
+            'px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 border',
+            currentFilter === 'recent'
+              ? 'bg-green-600 text-white border-green-500 shadow-md'
+              : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-600/50'
+          ]"
+        >
+          🕒 최신
+        </button>
+        <button 
+          @click="setFilter('popular')"
+          :class="[
+            'px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 border',
+            currentFilter === 'popular'
+              ? 'bg-green-600 text-white border-green-500 shadow-md'
+              : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-600/50'
+          ]"
+        >
+          🔥 인기
+        </button>
+        <button 
+          @click="setFilter('all')"
+          :class="[
+            'px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200 border',
+            currentFilter === 'all'
+              ? 'bg-green-600 text-white border-green-500 shadow-md'
+              : 'bg-gray-700/50 text-gray-300 border-gray-600/50 hover:bg-gray-600/50'
+          ]"
+        >
+          📋 전체
+        </button>
       </div>
 
       <!-- Seeds List -->
       <div class="seeds-list">
-        <div v-if="loading" class="loading-state">
-          <div class="spinner"></div>
-          <p>지식의 씨앗을 불러오는 중...</p>
+        <div v-if="loading" class="text-center py-12 text-gray-400">
+          <div class="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p class="text-sm">지식의 씨앗을 불러오는 중...</p>
         </div>
         
-        <div v-else-if="filteredSeeds.length === 0" class="empty-state">
-          <p>🌱 아직 심어진 씨앗이 없습니다</p>
-          <p class="hint">첫 번째 지식의 씨앗을 심어보세요!</p>
+        <div v-else-if="filteredSeeds.length === 0" class="text-center py-12 bg-gray-800/30 rounded-xl border border-gray-600/30">
+          <div class="text-4xl mb-3">🌱</div>
+          <p class="text-gray-400 text-sm mb-2">아직 심어진 씨앗이 없습니다</p>
+          <p class="text-xs text-gray-500">첫 번째 지식의 씨앗을 심어보세요!</p>
         </div>
         
         <div 
@@ -101,45 +130,59 @@
           :key="seed.id"
           class="seed-card"
         >
-          <div class="seed-header">
-            <div class="creator-info">
-              <div class="creator-avatar">
-                {{ getSpeciesEmoji(seed.creator.species) }}
+          <div class="flex items-start gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-600/30 hover:shadow-md transition-all duration-200">
+            <!-- 왼쪽: 작성자 정보 -->
+            <div class="flex flex-col items-center gap-2 min-w-0 flex-shrink-0">
+              <div class="text-2xl">{{ getSpeciesEmoji(seed.creator.species) }}</div>
+              <div class="text-center">
+                <h4 class="text-xs font-semibold text-white">{{ seed.creator.name }}</h4>
+                <div class="flex flex-col gap-1 mt-1">
+                  <span class="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">Lv.{{ seed.creator.level }}</span>
+                  <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">🌳 {{ seed.tree_size }}</span>
+                </div>
               </div>
-              <div class="creator-details">
-                <h4 class="creator-name">{{ seed.creator.name }}</h4>
-                <span class="creator-level">Lv.{{ seed.creator.level }}</span>
+            </div>
+
+            <!-- 오른쪽: 컨텐츠 영역 -->
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start mb-2">
+                <h3 class="text-sm font-semibold text-white flex-1">{{ seed.title }}</h3>
+                <span class="text-xs text-gray-400 ml-2 flex-shrink-0">{{ formatDate(seed.created_at) }}</span>
               </div>
-            </div>
-            <div class="seed-meta">
-              <span class="tree-size">🌳 {{ seed.tree_size }}</span>
-              <span class="created-date">{{ formatDate(seed.created_at) }}</span>
-            </div>
-          </div>
-          
-          <div class="seed-content">
-            <h3 class="seed-title">{{ seed.title }}</h3>
-            <p class="seed-description">{{ seed.content }}</p>
-          </div>
-          
-          <div class="seed-footer">
-            <div class="seed-stats">
-              <span class="comment-count">💬 {{ seed.comments.length }}개 댓글</span>
-            </div>
-            <div class="seed-actions">
-              <button 
-                @click="toggleSeedDetails(seed.id)"
-                class="action-button details"
-              >
-                {{ expandedSeeds.has(seed.id) ? '접기' : '자세히' }}
-              </button>
-              <button 
-                @click="openWaterModal(seed)"
-                :disabled="seed.creator_id === currentCharacter?.id"
-                class="action-button water"
-              >
-                💧 물주기
-              </button>
+              
+              <p class="text-xs text-gray-300 mb-3 leading-relaxed" :class="{ 'line-clamp-2': !expandedSeeds.has(seed.id) }">
+                {{ expandedSeeds.has(seed.id) ? seed.content : truncateText(seed.content, 100) }}
+              </p>
+              
+              <!-- 하단 액션 바 -->
+              <div class="flex justify-between items-center pt-2 border-t border-gray-600/30">
+                <div class="flex gap-3 text-xs text-gray-400">
+                  <span class="flex items-center gap-1">
+                    <span>💬</span>
+                    <span>{{ seed.comments.length }}</span>
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span>📈</span>
+                    <span>성장 중</span>
+                  </span>
+                </div>
+                
+                <div class="flex gap-2">
+                  <button 
+                    @click="toggleSeedDetails(seed.id)"
+                    class="px-3 py-1 text-xs font-medium bg-gray-700 text-gray-300 hover:bg-gray-600 rounded-md transition-colors"
+                  >
+                    {{ expandedSeeds.has(seed.id) ? '접기' : '더보기' }}
+                  </button>
+                  <button 
+                    @click="openWaterModal(seed)"
+                    :disabled="seed.creator_id === currentCharacter?.id"
+                    class="px-3 py-1 text-xs font-medium bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 rounded-md transition-colors"
+                  >
+                    💧 물주기
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -547,166 +590,30 @@ onMounted(async () => {
 
 <style scoped>
 .knowledge-seeds {
-  @apply bg-transparent rounded-2xl p-3;
-  max-height: 600px;
+  @apply bg-transparent;
+  padding: 0;
+  height: 100%;
   overflow-y: auto;
   border: none;
   box-shadow: none;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.seeds-header {
-  @apply mb-3;
-}
 
-.section-title {
-  @apply text-base font-bold text-white mb-1;
-}
-
-.seeds-stats {
-  @apply flex gap-4;
-}
-
-.stat-item {
-  @apply flex items-center gap-1 text-sm text-gray-300;
-}
-
-.stat-icon {
-  @apply text-base;
-}
-
-.seeds-tabs {
-  @apply flex gap-1 mb-3;
-}
-
-.tab-button {
-  @apply px-2 py-1 text-xs font-medium rounded-md transition-all duration-200 border;
-  @apply bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600;
-}
-
-.tab-button.active {
-  @apply bg-green-600 text-white border-green-500 shadow-md;
-}
-
+/* 기존 다크 테마 스타일 시스템에 맞는 최소 CSS */
 .tab-content {
   @apply space-y-3;
 }
 
-.search-section {
-  @apply space-y-3;
-}
-
-.search-bar {
-  @apply flex gap-2;
-}
-
-.search-input {
-  @apply flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm;
-  @apply focus:ring-2 focus:ring-green-500 focus:border-transparent;
-}
-
-.refresh-button {
-  @apply p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors;
-}
-
-.filter-buttons {
-  @apply flex gap-2;
-}
-
-.filter-btn {
-  @apply px-3 py-1 text-xs font-medium rounded-lg transition-all;
-  @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
-}
-
-.filter-btn.active {
-  @apply bg-green-100 text-green-700 border border-green-300;
-}
-
 .seeds-list {
-  @apply space-y-4 max-h-96 overflow-y-auto;
-}
-
-.seed-card {
-  @apply bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all;
-}
-
-.seed-header {
-  @apply flex items-start justify-between mb-3;
-}
-
-.creator-info {
-  @apply flex items-center gap-3;
-}
-
-.creator-avatar {
-  @apply text-xl;
-}
-
-.creator-details {
-  @apply flex flex-col;
-}
-
-.creator-name {
-  @apply font-semibold text-gray-800 text-sm;
-}
-
-.creator-level {
-  @apply text-xs text-gray-500;
-}
-
-.seed-meta {
-  @apply flex flex-col items-end gap-1 text-xs text-gray-500;
-}
-
-.tree-size {
-  @apply font-medium text-green-600;
-}
-
-.seed-content {
-  @apply mb-3;
-}
-
-.seed-title {
-  @apply font-semibold text-gray-800 mb-2;
-}
-
-.seed-description {
-  @apply text-sm text-gray-600 line-clamp-3;
-}
-
-.seed-footer {
-  @apply flex items-center justify-between;
-}
-
-.seed-stats {
-  @apply flex gap-3 text-xs text-gray-500;
-}
-
-.seed-actions {
-  @apply flex gap-2;
-}
-
-.action-button {
-  @apply px-3 py-1 text-xs font-medium rounded-lg transition-all;
-}
-
-.action-button.details {
-  @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
-}
-
-.action-button.water {
-  @apply bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50;
-}
-
-.action-button.primary {
-  @apply bg-green-500 text-white hover:bg-green-600 disabled:opacity-50;
-}
-
-.action-button.secondary {
-  @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  @apply space-y-3 max-h-80 overflow-y-auto;
 }
 
 .seed-details {
-  @apply mt-4 pt-4 border-t border-gray-100;
+  @apply mt-3 pt-3 border-t border-gray-600/30 bg-gray-900/30 rounded-lg p-3;
 }
 
 .comments-section {
@@ -714,15 +621,15 @@ onMounted(async () => {
 }
 
 .comments-title {
-  @apply font-semibold text-gray-800 text-sm;
+  @apply text-sm font-semibold text-white mb-3;
 }
 
 .comments-list {
-  @apply space-y-3;
+  @apply space-y-2;
 }
 
 .comment-item {
-  @apply bg-gray-50 rounded-lg p-3;
+  @apply p-3 bg-gray-800/50 rounded-lg border border-gray-600/30;
 }
 
 .comment-header {
@@ -730,112 +637,32 @@ onMounted(async () => {
 }
 
 .commenter-info {
-  @apply flex items-center gap-2 text-sm;
-}
-
-.commenter-avatar {
-  @apply text-base;
+  @apply flex items-center gap-2;
 }
 
 .commenter-name {
-  @apply font-medium text-gray-800;
-}
-
-.commenter-level {
-  @apply text-xs text-gray-500;
+  @apply text-sm font-medium text-white;
 }
 
 .comment-date {
-  @apply text-xs text-gray-500;
+  @apply text-xs text-gray-400;
 }
 
 .comment-content {
-  @apply text-sm text-gray-700;
+  @apply text-sm text-gray-300;
 }
 
-.create-seed-form {
-  @apply space-y-4;
-}
-
-.form-title {
-  @apply text-lg font-semibold text-gray-800;
-}
-
-.form-description {
-  @apply text-sm text-gray-600;
-}
-
-.form-group {
-  @apply space-y-2;
-}
-
-.form-label {
-  @apply block text-sm font-medium text-gray-700;
-}
-
-.form-input, .form-textarea {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-lg text-sm;
-  @apply focus:ring-2 focus:ring-green-500 focus:border-transparent;
-}
-
-.char-count {
-  @apply text-xs text-gray-500 text-right;
-}
-
-.form-actions {
-  @apply flex gap-3 justify-end;
-}
-
-.my-seeds-section {
-  @apply space-y-4;
-}
-
-.section-stats {
-  @apply grid grid-cols-3 gap-4;
-}
-
-.stat-card {
-  @apply bg-white rounded-lg p-3 text-center border border-gray-200;
-}
-
-.stat-value {
-  @apply text-lg font-bold text-green-600;
-}
-
-.stat-label {
-  @apply text-xs text-gray-500;
-}
-
-.seeds-grid {
-  @apply grid grid-cols-1 gap-3;
-}
-
-.my-seed-card {
-  @apply bg-white rounded-lg border border-gray-200 p-3;
-}
-
-.seed-preview {
-  @apply text-sm text-gray-600 my-2;
-}
-
-.view-button {
-  @apply text-xs text-green-600 hover:text-green-700 font-medium;
-}
-
+/* 다크 테마 모달 */
 .modal-overlay {
   @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
 }
 
 .modal-content {
-  @apply bg-white rounded-xl shadow-xl max-w-md w-full mx-4;
+  @apply bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 border border-gray-600;
 }
 
 .modal-header {
-  @apply flex items-center justify-between p-4 border-b border-gray-200;
-}
-
-.close-button {
-  @apply text-gray-400 hover:text-gray-600 text-xl font-bold;
+  @apply flex items-center justify-between p-4 border-b border-gray-600;
 }
 
 .modal-body {
@@ -843,30 +670,10 @@ onMounted(async () => {
 }
 
 .seed-info {
-  @apply space-y-1;
-}
-
-.seed-creator {
-  @apply text-sm text-gray-500;
+  @apply p-3 bg-gray-700/50 rounded-lg border border-gray-600/50;
 }
 
 .modal-footer {
-  @apply flex gap-3 justify-end p-4 border-t border-gray-200;
-}
-
-.loading-state, .empty-state {
-  @apply text-center py-8 text-gray-500;
-}
-
-.spinner {
-  @apply w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-2;
-}
-
-.hint {
-  @apply text-xs mt-1;
-}
-
-.no-comments {
-  @apply text-center py-4 text-gray-500 text-sm;
+  @apply flex gap-3 justify-end p-4 border-t border-gray-600;
 }
 </style>

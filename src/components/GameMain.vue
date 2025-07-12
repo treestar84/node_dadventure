@@ -475,17 +475,17 @@
         </div>
 
         <!-- Achievement Details (Achievements) -->
-        <div v-else-if="activeMenu === 'achievements'" class="panel-content component-content">
+        <div v-else-if="activeMenu === 'achievements'" class="panel-content">
           <AchievementPanel />
         </div>
 
         <!-- Social Hub (Social) -->
-        <div v-else-if="activeMenu === 'social'" class="panel-content component-content">
+        <div v-else-if="activeMenu === 'social'" class="panel-content">
           <SocialHub />
         </div>
 
         <!-- Knowledge Seeds (Seeds) -->
-        <div v-else-if="activeMenu === 'seeds'" class="panel-content component-content">
+        <div v-else-if="activeMenu === 'seeds'" class="panel-content">
           <KnowledgeSeeds />
         </div>
       </div>
@@ -925,7 +925,8 @@ function playWithCharacter() {
   display: grid;
   grid-template-columns: 380px 1fr 380px;
   gap: 2rem;
-  align-items: start;
+  align-items: stretch;
+  min-height: calc(100vh - 8rem);
 }
 
 /* Panels */
@@ -2102,5 +2103,15 @@ function playWithCharacter() {
 .tip-subtitle {
   font-size: 0.75rem;
   color: #a0aec0;
+}
+
+/* Panel Content Styles */
+.panel-content {
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
 }
 </style>
