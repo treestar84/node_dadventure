@@ -92,6 +92,7 @@ export const useSupabaseFoodStore = defineStore('supabase-food', () => {
       if (foodError) throw foodError
       
       foodItems.value = foods || []
+      console.log('[FOOD STORE] foodItems.value after load:', foodItems.value)
       
       // 상자 데이터 로드
       const { data: boxes, error: boxError } = await supabase

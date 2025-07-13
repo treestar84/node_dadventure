@@ -12,38 +12,31 @@
         <p class="empty-subtitle">왼쪽에서 퀘스트를 수락해보세요!</p>
       </div>
       
-      <div v-else class="active-quests-list">
+      <div v-else class="active-quests-list compact-list">
         <div
           v-for="quest in acceptedQuests"
           :key="quest.id"
-          class="active-quest-item"
+          class="active-quest-item compact"
           @click="selectQuest(quest)"
         >
-          <div class="quest-header">
-            <h3>{{ quest.title }}</h3>
-            <span class="quest-reward">🐛 {{ quest.reward_food_count }}</span>
+          <div class="quest-row">
+            <span class="quest-title" :title="quest.title">{{ quest.title }}</span>
+            <span class="quest-time">{{ formatTimeRemaining(quest.expires_at) }}</span>
+            <span class="quest-reward">🐛{{ quest.reward_food_count }}</span>
+            <button
+              @click.stop="completeQuest(quest.id)"
+              class="complete-button compact"
+            >
+              완료
+            </button>
           </div>
-          
-          <div class="quest-progress">
-            <div class="progress-info">
-              <span class="time-remaining">{{ formatTimeRemaining(quest.expires_at) }}</span>
-              <span class="progress-percentage">{{ Math.round(getProgressPercentage(quest)) }}%</span>
-            </div>
+          <div class="quest-progress-bar">
             <div class="progress-bar">
               <div 
                 class="progress-fill" 
                 :style="{ width: getProgressPercentage(quest) + '%' }"
               ></div>
             </div>
-          </div>
-          
-          <div class="quest-actions">
-            <button
-              @click.stop="completeQuest(quest.id)"
-              class="complete-button"
-            >
-              즉시 완료
-            </button>
           </div>
         </div>
       </div>
@@ -573,5 +566,93 @@ function getQuestStatusText(quest: Quest): string {
   font-size: 0.8rem;
   margin: 0;
   opacity: 0.7;
+}
+
+.active-quests-list.compact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.active-quest-item.compact {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  border: 1px solid #63b3ed;
+  border-radius: 0.35rem;
+  padding: 0.3rem 0.5rem;
+  min-height: unset;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.active-quest-item.compact:hover {
+  border-color: #4299e1;
+  box-shadow: 0 2px 8px rgba(99, 179, 237, 0.13);
+  transform: translateY(-1px);
+}
+.quest-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 1.7em;
+}
+.quest-title {
+  flex: 1 1 0;
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.92em;
+}
+.quest-time {
+  color: #a0aec0;
+  font-size: 0.85em;
+  min-width: 60px;
+  text-align: right;
+}
+.quest-reward {
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.95em;
+  min-width: 40px;
+  text-align: right;
+}
+.complete-button.compact {
+  padding: 0.15rem 0.7rem;
+  background: linear-gradient(135deg, #4299e1 0%, #63b3ed 100%);
+  color: #fff;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.8em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+.complete-button.compact:hover {
+  background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(99, 179, 237, 0.13);
+}
+.quest-progress-bar {
+  margin-top: 0.1rem;
+}
+.progress-bar {
+  height: 0.3rem;
+  background: #4a5568;
+  border-radius: 0.15rem;
+  overflow: hidden;
+}
+.progress-fill {
+  background: linear-gradient(90deg, #63b3ed 0%, #4299e1 100%);
+  height: 100%;
+  border-radius: 0.15rem;
+  transition: width 0.3s ease;
 }
 </style> 

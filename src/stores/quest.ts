@@ -464,6 +464,8 @@ export const useQuestStore = defineStore('quest', () => {
       
       if (foodError) {
         console.error('Error creating food rewards:', foodError)
+        error.value = '먹이 보상 지급에 실패했습니다: ' + (foodError.message || foodError.toString())
+        alert('먹이 보상 지급에 실패했습니다! 관리자에게 문의하세요.')
         throw foodError
       } else {
         console.log(`Successfully created ${quest.reward_food_count} food items in DB`)
