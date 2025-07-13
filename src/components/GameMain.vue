@@ -560,6 +560,7 @@
             @accept-quest="handleAcceptQuest"
             @reject-quest="handleRejectQuest"
             @complete-quest="handleCompleteQuest"
+            @quest-selected="handleQuestSelected"
           />
         </div>
 
@@ -604,8 +605,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useMockCharacterStore } from '@/stores/mock-character'
-import { useMockBugStore } from '@/stores/mock-bug'
+import { useSupabaseCharacterStore } from '@/stores/supabase-character'
+import { useSupabaseFoodStore } from '@/stores/supabase-food'
 import { useQuestStore } from '@/stores/quest'
 import { useAchievementStore } from '@/stores/achievement'
 import { useSocialStore } from '@/stores/social'
@@ -617,8 +618,8 @@ import QuestDetailPanel from './QuestDetailPanel.vue'
 import SocialHub from './SocialHub.vue'
 import KnowledgeSeeds from './KnowledgeSeeds.vue'
 
-const characterStore = useMockCharacterStore()
-const bugStore = useMockBugStore()
+const characterStore = useSupabaseCharacterStore()
+const bugStore = useSupabaseFoodStore()
 const questStore = useQuestStore()
 const achievementStore = useAchievementStore()
 const socialStore = useSocialStore()
@@ -1047,7 +1048,7 @@ async function handleAcceptQuest(questId: string) {
     await questStore.acceptQuest(questId, character.value.id)
     // 선택된 퀘스트 업데이트
     const updatedQuest = questStore.acceptedQuests.find(q => q.id === questId) ||
-                        questStore.availableQuests.find(q => q.id === questId)
+                        questStore.receivedQuests.find(q => q.id === questId)
     if (updatedQuest) {
       selectedQuest.value = updatedQuest
     }
@@ -1057,11 +1058,8 @@ async function handleAcceptQuest(questId: string) {
 async function handleRejectQuest(questId: string) {
   if (character.value?.id) {
     await questStore.rejectQuest(questId, character.value.id)
-    // 선택된 퀘스트 업데이트
-    const updatedQuest = questStore.availableQuests.find(q => q.id === questId)
-    if (updatedQuest) {
-      selectedQuest.value = updatedQuest
-    }
+    // 선택된 퀘스트를 null로 설정
+    selectedQuest.value = null
   }
 }
 

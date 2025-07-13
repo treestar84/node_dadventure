@@ -196,11 +196,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useMockCharacterStore } from '@/stores/mock-character'
+import { useSupabaseCharacterStore } from '@/stores/supabase-character'
 import { useQuestStore } from '@/stores/quest'
 import { SPECIES_OPTIONS, JOB_OPTIONS, type Species, type Job } from '@/types'
 
-const characterStore = useMockCharacterStore()
+const characterStore = useSupabaseCharacterStore()
 const questStore = useQuestStore()
 
 const characterData = ref({

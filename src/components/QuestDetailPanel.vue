@@ -1,144 +1,137 @@
 <template>
   <div class="quest-detail-panel">
-    <div class="panel-header">
-      <h2>퀘스트 상세</h2>
-    </div>
-
-    <!-- No Quest Selected -->
-    <div v-if="!selectedQuest" class="no-quest-selected">
-      <div class="empty-state">
-        <div class="empty-icon">⚔️</div>
-        <h3>퀘스트를 선택하세요</h3>
-        <p>왼쪽 패널에서 퀘스트를 클릭하여 상세 정보를 확인하세요.</p>
+    <!-- Active Quests Section -->
+    <div class="active-quests-section">
+      <div class="section-header">
+        <h2>진행 중인 퀘스트</h2>
+        <div class="quest-count">{{ acceptedQuests.length }}/{{ maxAccepted }}</div>
       </div>
-    </div>
-
-    <!-- Quest Detail -->
-    <div v-else class="quest-detail">
-      <!-- Quest Header -->
-      <div class="quest-detail-header" :class="selectedQuest.status">
-        <div class="quest-title-section">
-          <h3>{{ selectedQuest.title }}</h3>
-          <div class="quest-status-badge" :class="selectedQuest.status">
-            {{ getStatusText(selectedQuest.status) }}
+      
+      <div v-if="acceptedQuests.length === 0" class="empty-state">
+        <p>진행 중인 퀘스트가 없습니다</p>
+        <p class="empty-subtitle">왼쪽에서 퀘스트를 수락해보세요!</p>
+      </div>
+      
+      <div v-else class="active-quests-list">
+        <div
+          v-for="quest in acceptedQuests"
+          :key="quest.id"
+          class="active-quest-item"
+          @click="selectQuest(quest)"
+        >
+          <div class="quest-header">
+            <h3>{{ quest.title }}</h3>
+            <span class="quest-reward">🐛 {{ quest.reward_food_count }}</span>
           </div>
-        </div>
-        <div class="quest-reward-section">
-          <div class="reward-display">
-            <span class="reward-icon">🐛</span>
-            <span class="reward-amount">{{ selectedQuest.reward_food_count }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quest Description -->
-      <div class="quest-description-section">
-        <h4>퀘스트 설명</h4>
-        <p>{{ selectedQuest.description }}</p>
-      </div>
-
-      <!-- Quest Details -->
-      <div class="quest-details-section">
-        <div class="detail-item">
-          <span class="detail-label">소요 시간:</span>
-          <span class="detail-value">{{ selectedQuest.duration_hours }}시간</span>
-        </div>
-        
-        <div v-if="selectedQuest.status === 'accepted'" class="detail-item">
-          <span class="detail-label">남은 시간:</span>
-          <span class="detail-value time-remaining">{{ formatTimeRemaining(selectedQuest.expires_at) }}</span>
-        </div>
-        
-        <div v-if="selectedQuest.status === 'accepted'" class="detail-item">
-          <span class="detail-label">진행률:</span>
-          <div class="progress-container">
+          
+          <div class="quest-progress">
+            <div class="progress-info">
+              <span class="time-remaining">{{ formatTimeRemaining(quest.expires_at) }}</span>
+              <span class="progress-percentage">{{ Math.round(getProgressPercentage(quest)) }}%</span>
+            </div>
             <div class="progress-bar">
               <div 
                 class="progress-fill" 
-                :style="{ width: getProgressPercentage(selectedQuest) + '%' }"
+                :style="{ width: getProgressPercentage(quest) + '%' }"
               ></div>
             </div>
-            <span class="progress-text">{{ Math.round(getProgressPercentage(selectedQuest)) }}%</span>
+          </div>
+          
+          <div class="quest-actions">
+            <button
+              @click.stop="completeQuest(quest.id)"
+              class="complete-button"
+            >
+              즉시 완료
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Quest Details -->
+    <div v-if="selectedQuest" class="selected-quest-section">
+      <div class="section-header">
+        <h2>퀘스트 상세</h2>
+      </div>
+      
+      <div class="quest-detail-card">
+        <div class="quest-detail-header">
+          <h3>{{ selectedQuest.title }}</h3>
+          <div class="quest-status" :class="getQuestStatusClass(selectedQuest)">
+            {{ getQuestStatusText(selectedQuest) }}
           </div>
         </div>
         
-        <div v-if="selectedQuest.status === 'completed'" class="detail-item">
-          <span class="detail-label">완료 시간:</span>
-          <span class="detail-value">{{ formatCompletionTime(selectedQuest.completed_at) }}</span>
+        <div class="quest-detail-content">
+          <div class="detail-row">
+            <span class="detail-label">설명:</span>
+            <span class="detail-value">{{ selectedQuest.description }}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">소요 시간:</span>
+            <span class="detail-value">{{ selectedQuest.duration_hours }}시간</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">보상:</span>
+            <span class="detail-value">🐛 {{ selectedQuest.reward_food_count }}개</span>
+          </div>
+          
+          <div v-if="selectedQuest.accepted_at" class="detail-row">
+            <span class="detail-label">수락 시간:</span>
+            <span class="detail-value">{{ formatDateTime(selectedQuest.accepted_at) }}</span>
+          </div>
+          
+          <div v-if="selectedQuest.expires_at" class="detail-row">
+            <span class="detail-label">완료 예정:</span>
+            <span class="detail-value">{{ formatDateTime(selectedQuest.expires_at) }}</span>
+          </div>
+          
+          <div v-if="selectedQuest.completed_at" class="detail-row">
+            <span class="detail-label">완료 시간:</span>
+            <span class="detail-value">{{ formatDateTime(selectedQuest.completed_at) }}</span>
+          </div>
         </div>
         
-        <div v-if="selectedQuest.accepted_at" class="detail-item">
-          <span class="detail-label">수락 시간:</span>
-          <span class="detail-value">{{ formatCompletionTime(selectedQuest.accepted_at) }}</span>
-        </div>
-      </div>
-
-      <!-- Quest Actions -->
-      <div class="quest-actions-section">
-        <div v-if="selectedQuest.status === 'received'" class="action-buttons">
+        <div v-if="selectedQuest.state === 'received'" class="quest-detail-actions">
           <button
             @click="acceptQuest(selectedQuest.id)"
             :disabled="!canAcceptMoreQuests"
             class="action-button accept"
           >
-            <span class="button-icon">✅</span>
-            퀘스트 수락
+            수락
           </button>
           <button
             @click="rejectQuest(selectedQuest.id)"
             class="action-button reject"
           >
-            <span class="button-icon">❌</span>
-            퀘스트 거절
+            거절
           </button>
         </div>
         
-        <div v-else-if="selectedQuest.status === 'available'" class="action-buttons">
-          <button
-            @click="acceptQuest(selectedQuest.id)"
-            :disabled="!canAcceptMoreQuests"
-            class="action-button accept"
-          >
-            <span class="button-icon">✅</span>
-            퀘스트 수락
-          </button>
-        </div>
-        
-        <div v-else-if="selectedQuest.status === 'accepted'" class="action-buttons">
+        <div v-else-if="selectedQuest.state === 'accepted'" class="quest-detail-actions">
           <button
             @click="completeQuest(selectedQuest.id)"
             class="action-button complete"
           >
-            <span class="button-icon">⚡</span>
             즉시 완료
           </button>
         </div>
-        
-        <div v-else-if="selectedQuest.status === 'completed'" class="action-buttons">
-          <div class="completion-message">
-            <span class="completion-icon">🎉</span>
-            <span>퀘스트 완료!</span>
-          </div>
-        </div>
       </div>
+    </div>
 
-      <!-- Quest Tips -->
-      <div class="quest-tips-section">
-        <h4>퀘스트 팁</h4>
-        <div class="tips-list">
-          <div class="tip-item">
-            <span class="tip-icon">💡</span>
-            <span>퀘스트는 시간이 지나면 자동으로 완료됩니다</span>
-          </div>
-          <div class="tip-item">
-            <span class="tip-icon">🎯</span>
-            <span>즉시 완료로 보상을 바로 받을 수 있습니다</span>
-          </div>
-          <div class="tip-item">
-            <span class="tip-icon">📦</span>
-            <span>완료 시 먹이 아이템을 보상으로 받습니다</span>
-          </div>
-        </div>
+    <!-- No Quest Selected -->
+    <div v-else class="no-selection-section">
+      <div class="section-header">
+        <h2>퀘스트 상세</h2>
+      </div>
+      
+      <div class="no-selection-card">
+        <div class="no-selection-icon">📋</div>
+        <h3>퀘스트를 선택하세요</h3>
+        <p>왼쪽 패널에서 퀘스트를 클릭하여 상세 정보를 확인하세요.</p>
       </div>
     </div>
   </div>
@@ -146,6 +139,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useQuestStore } from '@/stores/quest'
 import type { Quest } from '@/types'
 
 const props = defineProps<{
@@ -157,9 +151,20 @@ const emit = defineEmits<{
   acceptQuest: [string]
   rejectQuest: [string]
   completeQuest: [string]
+  questSelected: [Quest]
 }>()
 
+const questStore = useQuestStore()
+
+// Computed properties
+const acceptedQuests = computed(() => questStore.acceptedQuests)
+const maxAccepted = computed(() => questStore.questProgress.maxAccepted)
+
 // Methods
+function selectQuest(quest: Quest) {
+  emit('questSelected', quest)
+}
+
 function acceptQuest(questId: string) {
   emit('acceptQuest', questId)
 }
@@ -170,17 +175,6 @@ function rejectQuest(questId: string) {
 
 function completeQuest(questId: string) {
   emit('completeQuest', questId)
-}
-
-function getStatusText(status: string): string {
-  switch (status) {
-    case 'received': return '새로 받음'
-    case 'available': return '사용 가능'
-    case 'accepted': return '진행 중'
-    case 'completed': return '완료됨'
-    case 'expired': return '만료됨'
-    default: return status
-  }
 }
 
 function formatTimeRemaining(expiresAt: string | undefined): string {
@@ -214,285 +208,316 @@ function getProgressPercentage(quest: Quest): number {
   return Math.min(100, (elapsed / totalDuration) * 100)
 }
 
-function formatCompletionTime(completedAt: string | undefined): string {
-  if (!completedAt) return '알 수 없음'
+function formatDateTime(dateString: string | undefined): string {
+  if (!dateString) return '알 수 없음'
   
-  const date = new Date(completedAt)
+  const date = new Date(dateString)
   return date.toLocaleString('ko-KR')
+}
+
+function getQuestStatusClass(quest: Quest): string {
+  switch (quest.state) {
+    case 'received': return 'status-received'
+    case 'accepted': return 'status-accepted'
+    case 'completed': return 'status-completed'
+    default: return 'status-unknown'
+  }
+}
+
+function getQuestStatusText(quest: Quest): string {
+  switch (quest.state) {
+    case 'received': return '수락 대기'
+    case 'accepted': return '진행 중'
+    case 'completed': return '완료됨'
+    default: return '알 수 없음'
+  }
 }
 </script>
 
 <style scoped>
 .quest-detail-panel {
+  padding: 1rem;
   height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  background: transparent;
 }
 
-.panel-header {
-  padding: 1rem;
-  border-bottom: 1px solid #2a2a2a;
-}
-
-.panel-header h2 {
-  margin: 0;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.no-quest-selected {
-  flex: 1;
+.section-header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.empty-state {
-  text-align: center;
-  color: #a0aec0;
-}
-
-.empty-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.empty-state h3 {
-  font-size: 1.25rem;
-  margin: 0 0 0.5rem 0;
-  color: #e2e8f0;
-}
-
-.empty-state p {
-  font-size: 0.875rem;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.quest-detail {
-  flex: 1;
-  padding: 1rem;
-  overflow-y: auto;
-}
-
-.quest-detail-header {
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1.5rem;
-  display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-}
-
-.quest-detail-header.received {
-  background: linear-gradient(135deg, #744210 0%, #975a16 100%);
-  border: 1px solid #fbbf24;
-}
-
-.quest-detail-header.available {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  border-radius: 0.5rem;
   border: 1px solid #4a5568;
 }
 
-.quest-detail-header.accepted {
-  background: linear-gradient(135deg, #2a4a6b 0%, #3d5a80 100%);
-  border: 1px solid #63b3ed;
-}
-
-.quest-detail-header.completed {
-  background: linear-gradient(135deg, #2d5a2d 0%, #4a7c4a 100%);
-  border: 1px solid #68d391;
-}
-
-.quest-title-section {
-  flex: 1;
-}
-
-.quest-title-section h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 0 0 0.5rem 0;
-}
-
-.quest-status-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.quest-status-badge.received {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-  border: 1px solid #fbbf24;
-}
-
-.quest-status-badge.available {
-  background: rgba(113, 128, 150, 0.2);
-  color: #a0aec0;
-  border: 1px solid #a0aec0;
-}
-
-.quest-status-badge.accepted {
-  background: rgba(99, 179, 237, 0.2);
-  color: #63b3ed;
-  border: 1px solid #63b3ed;
-}
-
-.quest-status-badge.completed {
-  background: rgba(104, 211, 145, 0.2);
-  color: #68d391;
-  border: 1px solid #68d391;
-}
-
-.quest-reward-section {
-  text-align: right;
-}
-
-.reward-display {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 0.5rem;
-}
-
-.reward-icon {
-  font-size: 1.5rem;
-}
-
-.reward-amount {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fbbf24;
-}
-
-.quest-description-section {
-  margin-bottom: 1.5rem;
-}
-
-.quest-description-section h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e2e8f0;
-  margin: 0 0 0.75rem 0;
-}
-
-.quest-description-section p {
+.section-header h2 {
   font-size: 0.875rem;
-  color: #a0aec0;
-  line-height: 1.6;
+  font-weight: 700;
+  color: #e2e8f0;
   margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
-.quest-details-section {
-  margin-bottom: 1.5rem;
+.quest-count {
+  font-size: 0.75rem;
+  color: #63b3ed;
+  font-weight: 700;
+  background: rgba(99, 179, 237, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(99, 179, 237, 0.3);
 }
 
-.detail-item {
+.active-quests-section {
+  flex: 1;
+  min-height: 0;
+}
+
+.empty-state {
+  padding: 1rem;
+  text-align: center;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  border-radius: 0.5rem;
+  border: 1px solid #4a5568;
+  color: #a0aec0;
+}
+
+.empty-subtitle {
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+.active-quests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.active-quest-item {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  border: 1px solid #63b3ed;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.active-quest-item:hover {
+  border-color: #4299e1;
+  box-shadow: 0 4px 16px rgba(99, 179, 237, 0.2);
+  transform: translateY(-1px);
+}
+
+.quest-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: 0.5rem;
 }
 
-.detail-item:last-child {
-  border-bottom: none;
-}
-
-.detail-label {
-  font-size: 0.875rem;
-  color: #a0aec0;
-  font-weight: 500;
-}
-
-.detail-value {
-  font-size: 0.875rem;
-  color: #ffffff;
+.quest-header h3 {
+  font-size: 0.9rem;
   font-weight: 600;
+  color: #e2e8f0;
+  margin: 0;
 }
 
-.detail-value.time-remaining {
-  color: #63b3ed;
+.quest-reward {
+  font-size: 0.8rem;
+  color: #fbbf24;
+  font-weight: 700;
 }
 
-.progress-container {
+.quest-progress {
+  margin-bottom: 0.75rem;
+}
+
+.progress-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  flex: 1;
-  max-width: 200px;
+  margin-bottom: 0.25rem;
+}
+
+.time-remaining {
+  font-size: 0.75rem;
+  color: #a0aec0;
+}
+
+.progress-percentage {
+  font-size: 0.75rem;
+  color: #63b3ed;
+  font-weight: 700;
 }
 
 .progress-bar {
-  flex: 1;
-  height: 8px;
-  background: #2d3748;
-  border-radius: 4px;
+  height: 0.5rem;
+  background: #4a5568;
+  border-radius: 0.25rem;
   overflow: hidden;
 }
 
 .progress-fill {
-  height: 100%;
   background: linear-gradient(90deg, #63b3ed 0%, #4299e1 100%);
-  border-radius: 4px;
+  height: 100%;
+  border-radius: 0.25rem;
   transition: width 0.3s ease;
 }
 
-.progress-text {
-  font-size: 0.75rem;
-  color: #63b3ed;
-  font-weight: 600;
-  min-width: 40px;
-  text-align: right;
-}
-
-.quest-actions-section {
-  margin-bottom: 1.5rem;
-}
-
-.action-buttons {
+.quest-actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  justify-content: flex-end;
 }
 
-.action-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
+.complete-button {
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #4299e1 0%, #63b3ed 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.complete-button:hover {
+  background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 179, 237, 0.3);
+}
+
+.selected-quest-section {
+  flex: 1;
+  min-height: 0;
+}
+
+.quest-detail-card {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  border: 1px solid #4a5568;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.quest-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #4a5568;
+}
+
+.quest-detail-header h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+.quest-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-received {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.status-accepted {
+  background: rgba(99, 179, 237, 0.1);
+  color: #63b3ed;
+  border: 1px solid rgba(99, 179, 237, 0.3);
+}
+
+.status-completed {
+  background: rgba(104, 211, 145, 0.1);
+  color: #68d391;
+  border: 1px solid rgba(104, 211, 145, 0.3);
+}
+
+.quest-detail-content {
+  margin-bottom: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0;
+}
+
+.detail-label {
+  font-size: 0.8rem;
+  color: #a0aec0;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  text-align: right;
+  max-width: 60%;
+  word-wrap: break-word;
+}
+
+.quest-detail-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.action-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 .action-button.accept {
   background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
   color: #ffffff;
+  border: 1px solid #48bb78;
 }
 
-.action-button.accept:hover:not(:disabled) {
+.action-button.accept:hover {
   background: linear-gradient(135deg, #48bb78 0%, #68d391 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
 }
 
+.action-button.accept:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 .action-button.reject {
   background: linear-gradient(135deg, #e53e3e 0%, #f56565 100%);
   color: #ffffff;
+  border: 1px solid #f56565;
 }
 
 .action-button.reject:hover {
@@ -504,97 +529,49 @@ function formatCompletionTime(completedAt: string | undefined): string {
 .action-button.complete {
   background: linear-gradient(135deg, #4299e1 0%, #63b3ed 100%);
   color: #ffffff;
+  border: 1px solid #63b3ed;
 }
 
 .action-button.complete:hover {
-  background: linear-gradient(135deg, #3182ce 0%, #4299e1 100%);
+  background: linear-gradient(135deg, #63b3ed 0%, #90cdf4 100%);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+  box-shadow: 0 4px 12px rgba(99, 179, 237, 0.3);
 }
 
-.action-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
+.no-selection-section {
+  flex: 1;
+  min-height: 0;
 }
 
-.button-icon {
-  font-size: 1rem;
-}
-
-.completion-message {
+.no-selection-card {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: linear-gradient(135deg, #2d5a2d 0%, #4a7c4a 100%);
-  border: 1px solid #68d391;
+  padding: 2rem;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
   border-radius: 0.5rem;
-  color: #ffffff;
-  font-weight: 600;
+  border: 1px solid #4a5568;
+  text-align: center;
+  color: #a0aec0;
 }
 
-.completion-icon {
-  font-size: 1.25rem;
+.no-selection-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
 }
 
-.quest-tips-section {
-  border-top: 1px solid #2a2a2a;
-  padding-top: 1.5rem;
-}
-
-.quest-tips-section h4 {
+.no-selection-card h3 {
   font-size: 1rem;
   font-weight: 600;
   color: #e2e8f0;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.5rem 0;
 }
 
-.tips-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.tip-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  background: rgba(26, 26, 26, 0.5);
-  border: 1px solid #2a2a2a;
-  border-radius: 0.5rem;
-}
-
-.tip-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
-  margin-top: 0.125rem;
-}
-
-.tip-item span:last-child {
-  font-size: 0.875rem;
-  color: #a0aec0;
-  line-height: 1.4;
-}
-
-/* Scrollbar styling */
-.quest-detail::-webkit-scrollbar {
-  width: 4px;
-}
-
-.quest-detail::-webkit-scrollbar-track {
-  background: #1a1a1a;
-  border-radius: 2px;
-}
-
-.quest-detail::-webkit-scrollbar-thumb {
-  background: #4a5568;
-  border-radius: 2px;
-}
-
-.quest-detail::-webkit-scrollbar-thumb:hover {
-  background: #718096;
+.no-selection-card p {
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.7;
 }
 </style> 

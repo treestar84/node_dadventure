@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useMockCharacterStore } from '@/stores/mock-character'
+import { useSupabaseCharacterStore } from '@/stores/supabase-character'
 import { useNotificationStore } from '@/stores/notification'
 import CharacterLogin from '@/components/CharacterLogin.vue'
 import CharacterCreation from '@/components/CharacterCreation.vue'
 import GameMain from '@/components/GameMain.vue'
 import AchievementNotification from '@/components/AchievementNotification.vue'
 
-const characterStore = useMockCharacterStore()
+const characterStore = useSupabaseCharacterStore()
 const notificationStore = useNotificationStore()
 const showCreateForm = ref(false)
 

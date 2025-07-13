@@ -25,8 +25,37 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
     return basePoints + levelBonusPoints - totalSpentPoints
   })
 
-  // Mock storage
-  const mockCharacters: Record<string, Character> = {}
+  // Mock storage with localStorage persistence
+  const STORAGE_KEY = 'mytamalife_characters'
+  
+  function loadCharactersFromStorage(): Record<string, Character> {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        // Convert date strings back to Date objects
+        Object.values(parsed).forEach((char: any) => {
+          if (char.created_at) {
+            char.created_at = new Date(char.created_at).toISOString()
+          }
+        })
+        return parsed
+      }
+    } catch (error) {
+      console.error('Error loading characters from storage:', error)
+    }
+    return {}
+  }
+  
+  function saveCharactersToStorage(characters: Record<string, Character>): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(characters))
+    } catch (error) {
+      console.error('Error saving characters to storage:', error)
+    }
+  }
+  
+  const mockCharacters: Record<string, Character> = loadCharactersFromStorage()
 
   function generateRandomPassword(): string {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -75,6 +104,7 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
       
       // Store in mock database
       mockCharacters[name] = newCharacter
+      saveCharactersToStorage(mockCharacters)
       
       currentCharacter.value = newCharacter
       isLoggedIn.value = true
@@ -129,6 +159,7 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
       
       // Store in mock database
       mockCharacters[name] = newCharacter
+      saveCharactersToStorage(mockCharacters)
       
       currentCharacter.value = newCharacter
       isLoggedIn.value = true

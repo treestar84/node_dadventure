@@ -6,7 +6,7 @@
           <div class="logo-icon">🐾</div>
         </div>
         <h1 class="auth-title">Welcome Back</h1>
-        <p class="auth-subtitle">Continue your MyTamaLife journey</p>
+        <p class="auth-subtitle">Continue your Dadventure journey</p>
       </div>
       
       <form @submit.prevent="handleLogin" class="auth-form">
@@ -65,7 +65,7 @@
       </div>
 
       <div class="auth-divider">
-        <span>New to MyTamaLife?</span>
+        <span>New to Dadventure?</span>
       </div>
 
       <button @click="$emit('switchToCreate')" class="auth-button secondary">
@@ -83,9 +83,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useMockCharacterStore } from '@/stores/mock-character'
+import { useSupabaseCharacterStore } from '@/stores/supabase-character'
 
-const characterStore = useMockCharacterStore()
+const characterStore = useSupabaseCharacterStore()
 
 const loginData = ref({
   name: '',

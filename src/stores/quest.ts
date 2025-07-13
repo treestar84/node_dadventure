@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { supabase } from '@/lib/supabase'
 import type { Quest, QuestDefinition } from '@/types'
-import { useMockBugStore } from '@/stores/mock-bug'
+import { useSupabaseFoodStore } from '@/stores/supabase-food'
 
 export const useQuestStore = defineStore('quest', () => {
   const receivedQuests = ref<Quest[]>([])
@@ -386,41 +386,26 @@ export const useQuestStore = defineStore('quest', () => {
         for (const quest of completedQuests) {
           console.log(`Giving reward for quest: ${quest.title} - ${quest.reward_food_count} food items`)
           
-          // Supabase에 저장 (백업용)
-          for (let i = 0; i < quest.reward_food_count; i++) {
-            const { error: foodError } = await supabase
-              .from('bugs')
-              .insert({
+          // Supabase에 먹이 생성
+          const { error: foodError } = await supabase
+            .from('bugs')
+            .insert(
+              Array.from({ length: quest.reward_food_count }, () => ({
                 character_id: characterId,
+                type: 'small',
                 used: false
-              })
-
-            if (foodError) {
-              console.error('Error giving quest reward:', foodError)
-            }
+              }))
+            )
+          
+          if (foodError) {
+            console.error('Error creating food rewards:', foodError)
           }
         }
 
-        // Mock-bug 스토어에 직접 추가 (실제 UI에 반영)
-        const bugStore = useMockBugStore()
-        
-        for (const quest of completedQuests) {
-          for (let i = 0; i < quest.reward_food_count; i++) {
-            const smallFood = {
-              id: crypto.randomUUID(),
-              type: 'small' as const,
-              createdAt: new Date(),
-              used: false
-            }
-            bugStore.foodItems.push(smallFood)
-          }
-        }
-        
-        // 작은 먹이를 큰 먹이로 변환 체크
-        bugStore.convertSmallToLarge()
-        
-        // 로컬 스토리지에 저장
-        bugStore.saveFoodToStorage(characterId)
+        // Food 스토어 업데이트 및 자동 변환
+        const foodStore = useSupabaseFoodStore()
+        await foodStore.loadFoodFromDatabase(characterId)
+        console.log('Food store updated')
 
         // 퀘스트 다시 로드
         await loadQuests(characterId)
@@ -466,44 +451,28 @@ export const useQuestStore = defineStore('quest', () => {
       // 보상 지급 (먹이 아이템)
       console.log(`Giving ${quest.reward_food_count} food items as reward`)
       
-      // Supabase에 저장 (백업용)
-      for (let i = 0; i < quest.reward_food_count; i++) {
-        const { data: foodData, error: foodError } = await supabase
-          .from('bugs')
-          .insert({
+      // Supabase에 먹이 생성
+      const { error: foodError } = await supabase
+        .from('bugs')
+        .insert(
+          Array.from({ length: quest.reward_food_count }, () => ({
             character_id: characterId,
+            type: 'small',
             used: false
-          })
-          .select()
-
-        if (foodError) {
-          console.error('Error giving quest reward:', foodError)
-        } else {
-          console.log(`Food item ${i + 1} created in DB:`, foodData)
-        }
+          }))
+        )
+      
+      if (foodError) {
+        console.error('Error creating food rewards:', foodError)
+        throw foodError
+      } else {
+        console.log(`Successfully created ${quest.reward_food_count} food items in DB`)
       }
 
-      // Mock-bug 스토어에 직접 추가 (실제 UI에 반영)
-      console.log('Adding food items to mock-bug store...')
-      const bugStore = useMockBugStore()
-      
-      for (let i = 0; i < quest.reward_food_count; i++) {
-        const smallFood = {
-          id: crypto.randomUUID(),
-          type: 'small' as const,
-          createdAt: new Date(),
-          used: false
-        }
-        bugStore.foodItems.push(smallFood)
-        console.log(`Food item ${i + 1} added to store:`, smallFood.id)
-      }
-      
-      // 작은 먹이를 큰 먹이로 변환 체크
-      bugStore.convertSmallToLarge()
-      
-      // 로컬 스토리지에 저장
-      bugStore.saveFoodToStorage(characterId)
-      console.log('Bug store updated with new food items')
+      // Food 스토어 업데이트 및 자동 변환
+      const foodStore = useSupabaseFoodStore()
+      await foodStore.loadFoodFromDatabase(characterId)
+      console.log('Food store updated')
 
       // 퀘스트 다시 로드
       await loadQuests(characterId)
