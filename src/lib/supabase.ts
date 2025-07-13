@@ -197,6 +197,91 @@ export type Database = {
           created_at?: string
         }
       }
+      quest_definitions: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          min_duration_hours: number
+          max_duration_hours: number
+          min_reward_food: number
+          max_reward_food: number
+          bonus_reward_chance: number
+          bonus_reward_food: number
+          category: string
+          difficulty: string
+          created_at: string
+        }
+        Insert: {
+          id: string
+          title: string
+          description: string
+          min_duration_hours: number
+          max_duration_hours: number
+          min_reward_food: number
+          max_reward_food: number
+          bonus_reward_chance: number
+          bonus_reward_food: number
+          category: string
+          difficulty: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string
+          min_duration_hours?: number
+          max_duration_hours?: number
+          min_reward_food?: number
+          max_reward_food?: number
+          bonus_reward_chance?: number
+          bonus_reward_food?: number
+          category?: string
+          difficulty?: string
+          created_at?: string
+        }
+      }
+      quests: {
+        Row: {
+          id: string
+          character_id: string
+          title: string
+          description: string
+          status: string
+          accepted_at?: string
+          completed_at?: string
+          expires_at?: string
+          duration_hours: number
+          reward_food_count: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          character_id: string
+          title: string
+          description: string
+          status?: string
+          accepted_at?: string
+          completed_at?: string
+          expires_at?: string
+          duration_hours: number
+          reward_food_count: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          character_id?: string
+          title?: string
+          description?: string
+          status?: string
+          accepted_at?: string
+          completed_at?: string
+          expires_at?: string
+          duration_hours?: number
+          reward_food_count?: number
+          created_at?: string
+        }
+      }
     }
   }
 }

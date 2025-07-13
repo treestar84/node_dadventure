@@ -198,6 +198,26 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.achievement-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.achievement-panel::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.achievement-panel::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.achievement-panel::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 .achievement-summary {
@@ -293,8 +313,28 @@ onMounted(async () => {
 
 .achievement-list {
   @apply space-y-1 mb-3;
-  max-height: 350px;
+  max-height: 400px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.achievement-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.achievement-list::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.achievement-list::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.achievement-list::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 .achievement-item {

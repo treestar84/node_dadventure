@@ -434,6 +434,417 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.social-hub::-webkit-scrollbar {
+  width: 6px;
+}
+
+.social-hub::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.social-hub::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.social-hub::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Social Hub Header */
+.social-hub > div:first-child {
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.3) 0%, rgba(59, 130, 246, 0.3) 100%);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.social-hub > div:first-child h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+.social-hub > div:first-child > div {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.social-hub > div:first-child > div > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+}
+
+.social-hub > div:first-child > div > div > span:first-child {
+  font-size: 1.125rem;
+}
+
+.social-hub > div:first-child > div > div > span:last-child {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+/* Social Tabs */
+.social-hub > div:nth-child(2) {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.social-hub > div:nth-child(2) > button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  border: 1px solid;
+  position: relative;
+}
+
+.social-hub > div:nth-child(2) > button:not(.active) {
+  background: rgba(55, 65, 81, 0.5);
+  color: #d1d5db;
+  border-color: rgba(75, 85, 99, 0.5);
+}
+
+.social-hub > div:nth-child(2) > button:not(.active):hover {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+.social-hub > div:nth-child(2) > button.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Tab Content */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  background: rgba(31, 41, 55, 0.5);
+  color: #ffffff;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.search-input:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6;
+  border-color: transparent;
+  transition: all 0.2s ease;
+}
+
+.refresh-button {
+  padding: 0.75rem;
+  background: rgba(55, 65, 81, 0.5);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 0.75rem;
+  transition: colors 0.2s ease;
+  color: #d1d5db;
+}
+
+.refresh-button:hover {
+  background: rgba(75, 85, 99, 0.5);
+}
+
+/* Character and Friend Lists */
+.character-list, .friend-list, .visit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 20rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.character-list::-webkit-scrollbar,
+.friend-list::-webkit-scrollbar,
+.visit-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.character-list::-webkit-scrollbar-track,
+.friend-list::-webkit-scrollbar-track,
+.visit-list::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.character-list::-webkit-scrollbar-thumb,
+.friend-list::-webkit-scrollbar-thumb,
+.visit-list::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.character-list::-webkit-scrollbar-thumb:hover,
+.friend-list::-webkit-scrollbar-thumb:hover,
+.visit-list::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Character and Friend Cards */
+.character-card, .friend-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.character-card:hover, .friend-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.character-info, .friend-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.character-avatar, .friend-avatar {
+  position: relative;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.status-indicator.online {
+  background: #10b981;
+}
+
+.status-indicator.away {
+  background: #f59e0b;
+}
+
+.status-indicator.offline {
+  background: #9ca3af;
+}
+
+.character-details, .friend-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.character-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.character-name, .friend-name {
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.875rem;
+}
+
+.character-badges {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.level-badge {
+  font-size: 0.75rem;
+  background: #dbeafe;
+  color: #1d4ed8;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+}
+
+.friend-badge {
+  font-size: 0.75rem;
+  background: #dcfce7;
+  color: #15803d;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+}
+
+.character-meta, .friend-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #d1d5db;
+  margin-bottom: 0.25rem;
+}
+
+.public-message {
+  font-size: 0.75rem;
+  font-style: italic;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+}
+
+.last-active, .friendship-date {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.character-actions, .friend-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.action-button {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.action-button.visit {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.action-button.visit:hover {
+  background: #2563eb;
+}
+
+.action-button.visit:disabled {
+  opacity: 0.5;
+}
+
+.action-button.friend {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.action-button.friend:hover {
+  background: #059669;
+}
+
+.action-button.friend:disabled {
+  opacity: 0.5;
+}
+
+.status-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* Visit Cards */
+.visit-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+  border-radius: 0.5rem;
+}
+
+.visit-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.visit-details {
+  flex: 1;
+}
+
+.visit-description {
+  font-size: 0.875rem;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+}
+
+.visit-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.visit-type-badge {
+  background: #374151;
+  color: #d1d5db;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+}
+
+/* Loading and Empty States */
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 2rem 0;
+  color: #9ca3af;
+}
+
+.spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #3b82f6;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hint {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #9ca3af;
 }
 
 .social-header {
@@ -492,6 +903,34 @@ onMounted(async () => {
 
 .character-list, .friend-list, .visit-list {
   @apply space-y-2 max-h-80 overflow-y-auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.character-list::-webkit-scrollbar,
+.friend-list::-webkit-scrollbar,
+.visit-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.character-list::-webkit-scrollbar-track,
+.friend-list::-webkit-scrollbar-track,
+.visit-list::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.character-list::-webkit-scrollbar-thumb,
+.friend-list::-webkit-scrollbar-thumb,
+.visit-list::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.character-list::-webkit-scrollbar-thumb:hover,
+.friend-list::-webkit-scrollbar-thumb:hover,
+.visit-list::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 .character-card, .friend-card {

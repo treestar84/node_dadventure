@@ -196,10 +196,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useCharacterStore } from '@/stores/character'
+import { useMockCharacterStore } from '@/stores/mock-character'
+import { useQuestStore } from '@/stores/quest'
 import { SPECIES_OPTIONS, JOB_OPTIONS, type Species, type Job } from '@/types'
 
-const characterStore = useCharacterStore()
+const characterStore = useMockCharacterStore()
+const questStore = useQuestStore()
 
 const characterData = ref({
   name: '',
@@ -266,6 +268,10 @@ async function handleCreateCharacter() {
   )
   
   if (result.success) {
+    // Initialize quests for new character
+    if (result.characterId) {
+      await questStore.initializeQuests(result.characterId)
+    }
     showSuccess.value = true
   } else {
     errorMessage.value = result.error || 'Failed to create character'

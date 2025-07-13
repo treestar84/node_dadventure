@@ -4,7 +4,7 @@
     <header class="header">
       <div class="header-content">
         <div class="header-left">
-          <h1 class="logo">MyTamaLife</h1>
+          <h1 class="logo">Dadventure</h1>
           <div class="player-badge">
             <span class="player-name">{{ character?.name }}</span>
             <span class="level-indicator">Level {{ character?.level }}</span>
@@ -40,7 +40,7 @@
       <!-- Left Panel: Dynamic Content -->
       <div class="panel left-panel">
         <!-- Character Stats (Home) -->
-        <div v-if="activeMenu === 'home'" class="panel-content">
+        <div v-if="activeMenu === 'home'" class="panel-content home-content">
           <div class="panel-header">
             <h2>Character Overview</h2>
           </div>
@@ -71,18 +71,53 @@
           <!-- Resources -->
           <div class="resources-section">
             <h3>Resources</h3>
+            
+            <!-- Food Counters -->
+            <div class="food-counters">
+              <div class="food-counter">
+                <span class="food-icon">🐛</span>
+                <span class="food-count">{{ smallFoodCount }}</span>
+                <span class="food-label">Small Food</span>
+              </div>
+              <div class="food-counter">
+                <span class="food-icon">🍖</span>
+                <span class="food-count">{{ largeFoodCount }}</span>
+                <span class="food-label">Large Food</span>
+              </div>
+              <div class="food-counter">
+                <span class="food-icon">📦</span>
+                <span class="food-count">{{ availableBoxes.length }}</span>
+                <span class="food-label">Boxes</span>
+              </div>
+            </div>
+            
+            <!-- Food Grid -->
             <div class="resource-grid">
+              <!-- Large Food Items -->
               <button
-                v-for="bug in availableBugs"
-                :key="bug.id"
-                @click="feedBug(bug.id)"
-                class="resource-item available"
+                v-for="food in availableFood.filter(f => f.type === 'large')"
+                :key="food.id"
+                @click="useFood(food.id)"
+                class="resource-item available large-food"
+              >
+                <div class="resource-icon">🍖</div>
+                <span>Large Food</span>
+              </button>
+              
+              <!-- Small Food Items (show up to 10) -->
+              <button
+                v-for="food in availableFood.filter(f => f.type === 'small').slice(0, 10)"
+                :key="food.id"
+                @click="useFood(food.id)"
+                class="resource-item available small-food"
               >
                 <div class="resource-icon">🐛</div>
-                <span>Food</span>
+                <span>Small Food</span>
               </button>
+              
+              <!-- Empty slots -->
               <div 
-                v-for="n in Math.max(0, 3 - availableBugs.length)" 
+                v-for="n in Math.max(0, 10 - availableFood.length)" 
                 :key="'empty-' + n"
                 class="resource-item empty"
               >
@@ -90,17 +125,41 @@
                 <span>Empty</span>
               </div>
             </div>
+            
+            <!-- Box Section -->
+            <div v-if="availableBoxes.length > 0" class="box-section">
+              <h4>Mystery Boxes</h4>
+              <div class="box-grid">
+                <button
+                  v-for="box in availableBoxes"
+                  :key="box.id"
+                  @click="openBox(box.id)"
+                  class="box-item-standalone"
+                >
+                  <div class="box-icon">📦</div>
+                  <span>Open Box</span>
+                </button>
+              </div>
+            </div>
+            
             <div class="resource-info">
-              <p>Resources replenish every 30 minutes</p>
-              <p v-if="bugStore.timeUntilNextBug > 0" class="timer-info">
-                Next bug in: {{ formatTime(bugStore.timeUntilNextBug) }}
+              <p>Small food generates every 30 minutes</p>
+              <p>10 small foods = 1 large food</p>
+              <p v-if="bugStore.timeUntilNextFood > 0" class="timer-info">
+                Next food in: {{ formatTime(bugStore.timeUntilNextFood) }}
+              </p>
+              <p class="storage-info">
+                Storage: {{ smallFoodCount }}/100 small foods ({{ Math.round(storageUsage) }}% full)
+              </p>
+              <p class="storage-info">
+                Total Food: {{ totalFoodCapacity }} items
               </p>
             </div>
           </div>
         </div>
 
         <!-- Stats Panel (Stats) -->
-        <div v-else-if="activeMenu === 'stats'" class="panel-content">
+        <div v-else-if="activeMenu === 'stats'" class="panel-content stats-content">
           <div class="panel-header">
             <h2>Character Stats</h2>
             <p class="available-points" v-if="availableStatPoints > 0">
@@ -149,8 +208,18 @@
           </div>
         </div>
 
+        <!-- Quest Panel (Quests) -->
+        <div v-else-if="activeMenu === 'quests'" class="panel-content quests-content">
+          <QuestPanel 
+            v-if="character?.id" 
+            :character-id="character.id" 
+            @quest-completed="handleQuestCompleted"
+            @quest-selected="handleQuestSelected"
+          />
+        </div>
+
         <!-- Achievement Stats (Achievements) -->
-        <div v-else-if="activeMenu === 'achievements'" class="panel-content">
+        <div v-else-if="activeMenu === 'achievements'" class="panel-content achievements-content">
           <div class="panel-header">
             <h2>Achievement Progress</h2>
           </div>
@@ -193,7 +262,7 @@
         </div>
 
         <!-- Social Stats (Social) -->
-        <div v-else-if="activeMenu === 'social'" class="panel-content">
+        <div v-else-if="activeMenu === 'social'" class="panel-content social-content">
           <div class="panel-header">
             <h2>Social Overview</h2>
           </div>
@@ -256,7 +325,7 @@
         </div>
 
         <!-- Knowledge Seeds Stats (Seeds) -->
-        <div v-else-if="activeMenu === 'seeds'" class="panel-content">
+        <div v-else-if="activeMenu === 'seeds'" class="panel-content seeds-content">
           <div class="panel-header">
             <h2>Knowledge Garden</h2>
           </div>
@@ -341,6 +410,15 @@
               <p>{{ currentMessage }}</p>
             </div>
             
+            <!-- Large Food Animation -->
+            <div v-if="showLargeFoodAnimation" class="large-food-animation">
+              <div class="animation-text">🍖 Large Food!</div>
+              <div class="animation-subtext">10 Actions in Progress...</div>
+              <div class="action-counter">
+                <span v-for="i in 10" :key="i" class="action-dot" :style="{ animationDelay: (i * 0.1) + 's' }">•</span>
+              </div>
+            </div>
+            
             <div class="emotion-control">
               <div class="current-emotion">
                 <span class="emotion-icon">{{ getEmotionEmoji(character?.emotion) }}</span>
@@ -379,7 +457,7 @@
       <!-- Right Panel: Dynamic Content -->
       <div class="panel right-panel">
         <!-- Quick Actions (Home) -->
-        <div v-if="activeMenu === 'home'" class="panel-content">
+        <div v-if="activeMenu === 'home'" class="panel-content home-content">
           <div class="panel-header">
             <h2>Quick Actions</h2>
           </div>
@@ -425,7 +503,7 @@
         </div>
 
         <!-- Stat Management (Stats) -->
-        <div v-else-if="activeMenu === 'stats'" class="panel-content">
+        <div v-else-if="activeMenu === 'stats'" class="panel-content stats-content">
           <div class="panel-header">
             <h2>Stat Management</h2>
             <div v-if="availableStatPoints > 0" class="points-badge">
@@ -474,19 +552,50 @@
           </div>
         </div>
 
+        <!-- Quest Detail Panel (Quests) -->
+        <div v-else-if="activeMenu === 'quests'" class="panel-content quests-content">
+          <QuestDetailPanel 
+            :selected-quest="selectedQuest"
+            :can-accept-more-quests="questStore.canAcceptMoreQuests"
+            @accept-quest="handleAcceptQuest"
+            @reject-quest="handleRejectQuest"
+            @complete-quest="handleCompleteQuest"
+          />
+        </div>
+
         <!-- Achievement Details (Achievements) -->
-        <div v-else-if="activeMenu === 'achievements'" class="panel-content">
+        <div v-else-if="activeMenu === 'achievements'" class="panel-content achievements-content">
           <AchievementPanel />
         </div>
 
         <!-- Social Hub (Social) -->
-        <div v-else-if="activeMenu === 'social'" class="panel-content">
+        <div v-else-if="activeMenu === 'social'" class="panel-content social-content">
           <SocialHub />
         </div>
 
         <!-- Knowledge Seeds (Seeds) -->
-        <div v-else-if="activeMenu === 'seeds'" class="panel-content">
+        <div v-else-if="activeMenu === 'seeds'" class="panel-content seeds-content">
           <KnowledgeSeeds />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reward Animation Overlay -->
+  <div v-if="showRewardAnimation" class="reward-animation-overlay">
+    <div class="reward-animation" :class="rewardType">
+      <div class="reward-icon">
+        <span v-if="rewardType === 'coins'">💰</span>
+        <span v-else-if="rewardType === 'box'">📦</span>
+      </div>
+      <div class="reward-text">
+        <div class="reward-title">
+          <span v-if="rewardType === 'coins'">Coins Earned!</span>
+          <span v-else-if="rewardType === 'box'">Box Found!</span>
+        </div>
+        <div class="reward-amount">
+          <span v-if="rewardType === 'coins'">+{{ rewardAmount }}</span>
+          <span v-else-if="rewardType === 'box'">+1 Box</span>
         </div>
       </div>
     </div>
@@ -495,18 +604,22 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useCharacterStore } from '@/stores/character'
-import { useBugStore } from '@/stores/bug'
+import { useMockCharacterStore } from '@/stores/mock-character'
+import { useMockBugStore } from '@/stores/mock-bug'
+import { useQuestStore } from '@/stores/quest'
 import { useAchievementStore } from '@/stores/achievement'
 import { useSocialStore } from '@/stores/social'
 import { useSeedStore } from '@/stores/seed'
-import { EMOTION_OPTIONS, type Species, type Job, type Bug } from '@/types'
+import { EMOTION_OPTIONS, type Species, type Job, type Bug, type Quest } from '@/types'
 import AchievementPanel from './AchievementPanel.vue'
+import QuestPanel from './QuestPanel.vue'
+import QuestDetailPanel from './QuestDetailPanel.vue'
 import SocialHub from './SocialHub.vue'
 import KnowledgeSeeds from './KnowledgeSeeds.vue'
 
-const characterStore = useCharacterStore()
-const bugStore = useBugStore()
+const characterStore = useMockCharacterStore()
+const bugStore = useMockBugStore()
+const questStore = useQuestStore()
 const achievementStore = useAchievementStore()
 const socialStore = useSocialStore()
 const seedStore = useSeedStore()
@@ -518,6 +631,7 @@ const activeMenu = ref('home')
 const menuItems = ref([
   { id: 'home', label: 'Home', icon: '🏠' },
   { id: 'stats', label: 'Stats', icon: '📊' },
+  { id: 'quests', label: 'Quests', icon: '⚔️' },
   { id: 'achievements', label: 'Achievements', icon: '🏆' },
   { id: 'social', label: 'Social', icon: '👥' },
   { id: 'seeds', label: 'Knowledge', icon: '🌱' }
@@ -532,7 +646,12 @@ const visitStats = ref({ totalVisitsGiven: 0, totalVisitsReceived: 0, popularity
 
 const character = computed(() => characterStore.currentCharacter)
 const availableStatPoints = computed(() => characterStore.availableStatPoints)
-const availableBugs = computed(() => bugStore.availableBugs)
+const availableFood = computed(() => bugStore.availableFood)
+const availableBoxes = computed(() => bugStore.availableBoxes)
+const smallFoodCount = computed(() => bugStore.smallFoodCount)
+const largeFoodCount = computed(() => bugStore.largeFoodCount)
+const totalFoodCapacity = computed(() => bugStore.totalFoodCapacity)
+const storageUsage = computed(() => bugStore.storageUsage)
 const achievementStats = computed(() => achievementStore.achievementStats)
 const friends = computed(() => socialStore.friends)
 const onlineFriends = computed(() => socialStore.onlineFriends)
@@ -544,6 +663,17 @@ const nextAchievements = computed(() => {
 
 const currentMessage = ref('')
 const messageInterval = ref<NodeJS.Timeout | null>(null)
+const selectedQuest = ref<Quest | null>(null)
+
+// 보상 연출 상태
+const showRewardAnimation = ref(false)
+const rewardType = ref<'coins' | 'box' | null>(null)
+const rewardAmount = ref(0)
+const rewardAnimationTimer = ref<NodeJS.Timeout | null>(null)
+
+// Large food 연출 상태
+const showLargeFoodAnimation = ref(false)
+const largeFoodAnimationTimer = ref<NodeJS.Timeout | null>(null)
 
 const expForNextLevel = computed(() => {
   if (!character.value) return 0
@@ -565,7 +695,8 @@ const expToNextLevel = computed(() => {
 
 onMounted(async () => {
   if (character.value?.id) {
-    await bugStore.initializeBugs(character.value.id)
+    bugStore.loadFood(character.value.id)
+    await questStore.loadQuests(character.value.id)
     await achievementStore.loadAchievements(character.value.id)
     await socialStore.loadFriends(character.value.id)
     await socialStore.updateActivityStatus(character.value.id, 'online')
@@ -582,7 +713,13 @@ onUnmounted(() => {
   if (messageInterval.value) {
     clearInterval(messageInterval.value)
   }
-  bugStore.stopBugTimer()
+  if (rewardAnimationTimer.value) {
+    clearTimeout(rewardAnimationTimer.value)
+  }
+  if (largeFoodAnimationTimer.value) {
+    clearTimeout(largeFoodAnimationTimer.value)
+  }
+  bugStore.unloadFood()
 })
 
 function getSpeciesEmoji(species: string | undefined): string {
@@ -645,15 +782,127 @@ function formatTime(milliseconds: number): string {
   return `${minutes}m ${seconds}s`
 }
 
-async function feedBug(bugId: string) {
+async function useFood(foodId: string) {
   if (!character.value) return
   
-  const expGain = Math.floor(Math.random() * 40) + 10
-  const success = await bugStore.feedBug(bugId, character.value.id)
+  const result = await bugStore.useFood(foodId, character.value.id)
   
-  if (success) {
-    await characterStore.gainExperience(expGain)
-    generateMessage(`Gained ${expGain} experience points!`)
+  if (result.success) {
+    // 경험치 획득
+    if (result.expGained) {
+      await characterStore.gainExperience(result.expGained)
+    }
+    
+    // 코인 획득
+    if (result.coinsGained) {
+      await characterStore.spendCoins(-result.coinsGained) // 음수로 전달하여 코인 증가
+    }
+    
+    // 상자 획득 (이미 store에서 처리됨)
+    
+    // 메시지 생성
+    let message = ''
+    if (result.isLargeFood) {
+      message = `Large food used! Gained ${result.expGained} experience points (${result.totalActions} actions)!`
+    } else {
+      message = `Gained ${result.expGained} experience points!`
+    }
+    
+    if (result.coinsGained) {
+      message += ` +${result.coinsGained} coins!`
+    }
+    if (result.boxGained) {
+      message += ` +1 box!`
+    }
+    
+    // Large food 사용 시 특별한 연출
+    if (result.isLargeFood) {
+      console.log('Large food used! Results:', result)
+      // 캐릭터 애니메이션 효과
+      showLargeFoodAnimation.value = true
+      
+      // 2초 후 애니메이션 종료
+      if (largeFoodAnimationTimer.value) {
+        clearTimeout(largeFoodAnimationTimer.value)
+      }
+      largeFoodAnimationTimer.value = setTimeout(() => {
+        showLargeFoodAnimation.value = false
+      }, 2000)
+      
+      // 캐릭터 애니메이션 효과 (메시지로 표현)
+      generateMessage('🍖 Large food consumed! Processing 10 actions...')
+      
+      // 잠시 후 최종 결과 메시지
+      setTimeout(() => {
+        generateMessage(message)
+      }, 1500)
+      
+      // 보상 애니메이션 (라지 먹이용 특별 버전) - 라지 먹이 애니메이션 후에 표시
+      if (result.coinsGained || result.boxGained) {
+        setTimeout(() => {
+          showRewardAnimation.value = true
+          rewardType.value = result.coinsGained ? 'coins' : 'box'
+          rewardAmount.value = result.coinsGained || 1
+          
+          // 3초 후 애니메이션 숨김
+          if (rewardAnimationTimer.value) {
+            clearTimeout(rewardAnimationTimer.value)
+          }
+          rewardAnimationTimer.value = setTimeout(() => {
+            showRewardAnimation.value = false
+            rewardType.value = null
+            rewardAmount.value = 0
+          }, 3000)
+        }, 2000) // 라지 먹이 애니메이션 완료 후
+      }
+    } else {
+      // 작은 먹이용 보상 애니메이션
+      if (result.coinsGained) {
+        showRewardAnimation.value = true
+        rewardType.value = 'coins'
+        rewardAmount.value = result.coinsGained
+        
+        // 3초 후 애니메이션 숨김
+        if (rewardAnimationTimer.value) {
+          clearTimeout(rewardAnimationTimer.value)
+        }
+        rewardAnimationTimer.value = setTimeout(() => {
+          showRewardAnimation.value = false
+          rewardType.value = null
+          rewardAmount.value = 0
+        }, 3000)
+      }
+      
+      if (result.boxGained) {
+        showRewardAnimation.value = true
+        rewardType.value = 'box'
+        rewardAmount.value = 1
+        
+        // 3초 후 애니메이션 숨김
+        if (rewardAnimationTimer.value) {
+          clearTimeout(rewardAnimationTimer.value)
+        }
+        rewardAnimationTimer.value = setTimeout(() => {
+          showRewardAnimation.value = false
+          rewardType.value = null
+          rewardAmount.value = 0
+        }, 3000)
+      }
+      
+      generateMessage(message)
+    }
+  }
+}
+
+async function openBox(boxId: string) {
+  if (!character.value) return
+  
+  const result = await bugStore.openBox(boxId, character.value.id)
+  
+  if (result.success) {
+    generateMessage(result.message || 'Box opened!')
+  } else {
+    generateMessage(result.message || 'Failed to open box')
   }
 }
 
@@ -783,6 +1032,51 @@ function playWithCharacter() {
   const randomMessage = playMessages[Math.floor(Math.random() * playMessages.length)]
   generateMessage(randomMessage)
   characterStore.gainExperience(5)
+}
+
+function handleQuestCompleted(event: { message: string }) {
+  generateMessage(event.message)
+}
+
+function handleQuestSelected(quest: Quest) {
+  selectedQuest.value = quest
+}
+
+async function handleAcceptQuest(questId: string) {
+  if (character.value?.id) {
+    await questStore.acceptQuest(questId, character.value.id)
+    // 선택된 퀘스트 업데이트
+    const updatedQuest = questStore.acceptedQuests.find(q => q.id === questId) ||
+                        questStore.availableQuests.find(q => q.id === questId)
+    if (updatedQuest) {
+      selectedQuest.value = updatedQuest
+    }
+  }
+}
+
+async function handleRejectQuest(questId: string) {
+  if (character.value?.id) {
+    await questStore.rejectQuest(questId, character.value.id)
+    // 선택된 퀘스트 업데이트
+    const updatedQuest = questStore.availableQuests.find(q => q.id === questId)
+    if (updatedQuest) {
+      selectedQuest.value = updatedQuest
+    }
+  }
+}
+
+async function handleCompleteQuest(questId: string) {
+  if (character.value?.id) {
+    const success = await questStore.completeQuest(questId, character.value.id)
+    if (success) {
+      generateMessage('퀘스트 완료! 먹이 보상을 받았습니다!')
+      // 선택된 퀘스트 업데이트
+      const updatedQuest = questStore.completedQuests.find(q => q.id === questId)
+      if (updatedQuest) {
+        selectedQuest.value = updatedQuest
+      }
+    }
+  }
 }
 </script>
 
@@ -1475,8 +1769,96 @@ function playWithCharacter() {
 
 /* Dynamic Panel Content Styles */
 .panel-content {
+  padding: 1rem;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+/* Home menu - no scroll needed */
+.panel-content.home-content {
   overflow: hidden;
+}
+
+/* Stats menu - no scroll needed */
+.panel-content.stats-content {
+  overflow: hidden;
+}
+
+/* Achievements menu - scroll needed for long lists */
+.panel-content.achievements-content {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.panel-content.achievements-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-content.achievements-content::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.panel-content.achievements-content::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.panel-content.achievements-content::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Social menu - scroll needed for long lists */
+.panel-content.social-content {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.panel-content.social-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-content.social-content::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.panel-content.social-content::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.panel-content.social-content::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Seeds menu - scroll needed for long lists */
+.panel-content.seeds-content {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.panel-content.seeds-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.panel-content.seeds-content::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 3px;
+}
+
+.panel-content.seeds-content::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 3px;
+}
+
+.panel-content.seeds-content::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
 }
 
 /* Stats sections */
@@ -2105,11 +2487,336 @@ function playWithCharacter() {
   color: #a0aec0;
 }
 
+/* Food System Styles */
+.food-counters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #4a5568;
+}
+
+.food-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.food-icon {
+  font-size: 1.5rem;
+}
+
+.food-count {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #63b3ed;
+}
+
+.food-label {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.large-food {
+  background: linear-gradient(135deg, #d69e2e 0%, #f6ad55 100%) !important;
+  border-color: #f6ad55 !important;
+}
+
+.large-food:hover {
+  background: linear-gradient(135deg, #f6ad55 0%, #fbbf24 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+}
+
+.small-food {
+  background: linear-gradient(135deg, #38a169 0%, #48bb78 100%) !important;
+  border-color: #48bb78 !important;
+}
+
+.small-food:hover {
+  background: linear-gradient(135deg, #48bb78 0%, #68d391 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+}
+
+.box-item {
+  background: linear-gradient(135deg, #805ad5 0%, #9f7aea 100%) !important;
+  border-color: #9f7aea !important;
+}
+
+.box-item:hover {
+  background: linear-gradient(135deg, #9f7aea 0%, #b794f4 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(128, 90, 213, 0.3);
+}
+
+/* Box Section Styles */
+.box-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #2d1b69 0%, #4c1d95 100%);
+  border-radius: 0.75rem;
+  border: 1px solid #7c3aed;
+}
+
+.box-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.box-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.box-item-standalone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #805ad5 0%, #9f7aea 100%);
+  border: 2px solid #b794f4;
+  border-radius: 0.75rem;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.box-item-standalone:hover {
+  background: linear-gradient(135deg, #9f7aea 0%, #b794f4 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(128, 90, 213, 0.4);
+  border-color: #d6bcfa;
+}
+
+.box-item-standalone:active {
+  transform: translateY(-1px);
+}
+
+.box-icon {
+  font-size: 2rem;
+  animation: boxGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes boxGlow {
+  0% {
+    filter: drop-shadow(0 0 5px rgba(159, 122, 234, 0.5));
+  }
+  100% {
+    filter: drop-shadow(0 0 15px rgba(159, 122, 234, 0.8));
+  }
+}
+
+.storage-info {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  margin: 0.5rem 0 0 0;
+  padding: 0.5rem;
+  background: rgba(160, 174, 192, 0.1);
+  border-radius: 0.375rem;
+  border: 1px solid rgba(160, 174, 192, 0.2);
+}
+
+/* Reward Animation Styles */
+.reward-animation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.reward-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid;
+  animation: rewardPop 0.5s ease-out, rewardFloat 3s ease-in-out;
+  pointer-events: none;
+}
+
+.reward-animation.coins {
+  border-color: #fbbf24;
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+}
+
+.reward-animation.box {
+  border-color: #9f7aea;
+  box-shadow: 0 0 30px rgba(159, 122, 234, 0.5);
+}
+
+.reward-icon {
+  font-size: 4rem;
+  animation: rewardBounce 0.6s ease-out 0.2s both;
+}
+
+.reward-text {
+  text-align: center;
+}
+
+.reward-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.reward-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+@keyframes rewardPop {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(-90deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes rewardFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes rewardBounce {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Large Food Animation Styles */
+.large-food-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.9);
+  border: 3px solid #fbbf24;
+  border-radius: 1rem;
+  z-index: 1000;
+  animation: largeFoodPop 0.3s ease-out;
+  box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+}
+
+.animation-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-align: center;
+}
+
+.animation-subtext {
+  font-size: 1rem;
+  color: #ffffff;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.action-counter {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+
+
+@keyframes largeFoodPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes actionDot {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.action-dot {
+  font-size: 1.5rem;
+  color: #fbbf24;
+  animation: actionDot 0.5s ease-out both, actionPulse 1s ease-in-out infinite 0.5s;
+}
+
+@keyframes actionPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 /* Panel Content Styles */
 .panel-content {
   padding: 1rem;
   height: 100%;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   background: transparent;

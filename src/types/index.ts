@@ -199,3 +199,48 @@ export const EMOTION_OPTIONS = [
 export type Species = typeof SPECIES_OPTIONS[number]
 export type Job = typeof JOB_OPTIONS[number]
 export type Emotion = typeof EMOTION_OPTIONS[number]
+
+// Quest System Types
+export interface Quest {
+  id: string
+  character_id: string
+  title: string
+  description: string
+  status: 'received' | 'available' | 'accepted' | 'completed' | 'expired'
+  accepted_at?: string
+  completed_at?: string
+  expires_at?: string
+  duration_hours: number
+  reward_food_count: number
+  created_at: string
+}
+
+export interface QuestDefinition {
+  id: string
+  title: string
+  description: string
+  min_duration_hours: number
+  max_duration_hours: number
+  min_reward_food: number
+  max_reward_food: number
+  bonus_reward_chance: number
+  bonus_reward_food: number
+  category: QuestCategory
+  difficulty: QuestDifficulty
+}
+
+export const QUEST_CATEGORIES = [
+  'daily',      // 일일 퀘스트
+  'adventure',  // 모험 퀘스트
+  'social',     // 사회 퀘스트
+  'crafting',   // 제작 퀘스트
+  'exploration', // 탐험 퀘스트
+  'special'     // 특별 퀘스트
+] as const
+
+export const QUEST_DIFFICULTIES = [
+  'easy', 'normal', 'hard', 'epic', 'legendary'
+] as const
+
+export type QuestCategory = typeof QUEST_CATEGORIES[number]
+export type QuestDifficulty = typeof QUEST_DIFFICULTIES[number]

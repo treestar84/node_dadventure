@@ -79,7 +79,66 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
       currentCharacter.value = newCharacter
       isLoggedIn.value = true
       
+      // Initialize food system for new character
+      const { useMockBugStore } = await import('./mock-bug')
+      const bugStore = useMockBugStore()
+      bugStore.loadFood(newCharacter.id)
+      
       return { success: true, password }
+    } catch (error) {
+      return { success: false, error: 'Failed to create character' }
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function createCharacterWithPassword(name: string, password: string, species: Species, job: Job): Promise<{ success: boolean; error?: string }> {
+    loading.value = true
+    
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Check if character name already exists
+      if (mockCharacters[name]) {
+        return { success: false, error: 'Character name already exists' }
+      }
+      
+      const passwordHash = btoa(password)
+      
+      const newCharacter: Character = {
+        id: crypto.randomUUID(),
+        name,
+        password_hash: passwordHash,
+        species,
+        job,
+        level: 1,
+        age: 1,
+        stats: {
+          str: 10, dex: 10, int: 10, vit: 10, agi: 10, luk: 10,
+          playfulness: 10, curiosity: 10, sensitivity: 10, awareness: 10,
+          meddling: 10, pragmatism: 10, appetite: 10, anger_control: 10, clumsiness: 10
+        } as CharacterStats,
+        emotion: 'happy',
+        appearance: {},
+        created_at: new Date().toISOString(),
+        coins: 100,
+        exp: 0,
+        items: []
+      }
+      
+      // Store in mock database
+      mockCharacters[name] = newCharacter
+      
+      currentCharacter.value = newCharacter
+      isLoggedIn.value = true
+      
+      // Initialize food system for new character
+      const { useMockBugStore } = await import('./mock-bug')
+      const bugStore = useMockBugStore()
+      bugStore.loadFood(newCharacter.id)
+      
+      return { success: true }
     } catch (error) {
       return { success: false, error: 'Failed to create character' }
     } finally {
@@ -103,6 +162,11 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
       
       currentCharacter.value = character
       isLoggedIn.value = true
+      
+      // Initialize food system for existing character
+      const { useMockBugStore } = await import('./mock-bug')
+      const bugStore = useMockBugStore()
+      bugStore.loadFood(character.id)
       
       return { success: true }
     } catch (error) {
@@ -197,7 +261,18 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
     }
   }
 
-  function logout() {
+  async function logout() {
+    // Unload food system before logout
+    if (currentCharacter.value) {
+      try {
+        const { useMockBugStore } = await import('./mock-bug')
+        const bugStore = useMockBugStore()
+        bugStore.unloadFood()
+      } catch (error) {
+        console.error('Error unloading food system:', error)
+      }
+    }
+    
     currentCharacter.value = null
     isLoggedIn.value = false
   }
@@ -212,6 +287,7 @@ export const useMockCharacterStore = defineStore('mock-character', () => {
     expToNextLevel,
     availableStatPoints,
     createCharacter,
+    createCharacterWithPassword,
     loginCharacter,
     updateCharacterStats,
     updateCharacterEmotion,

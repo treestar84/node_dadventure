@@ -83,9 +83,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useCharacterStore } from '@/stores/character'
+import { useMockCharacterStore } from '@/stores/mock-character'
 
-const characterStore = useCharacterStore()
+const characterStore = useMockCharacterStore()
 
 const loginData = ref({
   name: '',
